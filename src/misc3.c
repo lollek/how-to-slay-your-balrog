@@ -6,49 +6,23 @@
    not for profit purposes provided that this copyright and statement are
    included in all such copies. */
 
-#ifdef __TURBOC__
-#include	<stdio.h>
-#endif
+#include <string.h>
+#include <stdio.h>
+#include <ctype.h>
 
 #include "config.h"
 #include "constant.h"
 #include "types.h"
 #include "externs.h"
 
-#include <ctype.h>
-
-#ifndef USG
-#include <sys/types.h>
-#include <sys/param.h>
-#endif
-
-#ifdef USG
-#ifndef ATARIST_MWC
-#include <string.h>
-#else
-char *index();
-#endif
-#else
-#include <strings.h>
-#endif
-
-#if defined(LINT_ARGS)
-static void prt_lnum(char *, int32, int, int);
-static void prt_num(char *, int, int, int);
-static void prt_long(int32, int, int);
-static void prt_int(int, int, int);
-static void gain_level(void);
-#endif
-
 static char *stat_names[] = { "STR : ", "INT : ", "WIS : ",
-				 "DEX : ", "CON : ", "CHR : " };
-#define BLANK_LENGTH	24
+                              "DEX : ", "CON : ", "CHR : " };
+#define BLANK_LENGTH 24
 static char blank_string[] = "                        ";
 
 
 /* Places a particular trap at location y, x		-RAK-	*/
-void place_trap(y, x, subval)
-int y, x, subval;
+void place_trap(int y, int x, int subval)
 {
   register int cur_pos;
 
@@ -59,8 +33,7 @@ int y, x, subval;
 
 
 /* Places rubble at location y, x			-RAK-	*/
-void place_rubble(y, x)
-int y, x;
+void place_rubble(int y, int x)
 {
   register int cur_pos;
   register cave_type *cave_ptr;
@@ -74,16 +47,10 @@ int y, x;
 
 
 /* Places a treasure (Gold or Gems) at given row, column -RAK-	*/
-void place_gold(y, x)
-int y, x;
+void place_gold(int y, int x)
 {
   register int i, cur_pos;
-#ifdef M_XENIX
-  /* Avoid 'register' bug.  */
-  inven_type *t_ptr;
-#else
   register inven_type *t_ptr;
-#endif
 
   cur_pos = popt();
   i = ((randint(dun_level+2)+2) / 2) - 1;
@@ -101,8 +68,7 @@ int y, x;
 
 
 /* Returns the array number of a random object		-RAK-	*/
-int get_obj_num(level)
-int level;
+int get_obj_num(int level)
 {
   register int i, j;
 
@@ -148,8 +114,7 @@ int level;
 
 
 /* Places an object at given row, column co-ordinate	-RAK-	*/
-void place_object(y, x)
-int y, x;
+void place_object(int y, int x)
 {
   register int cur_pos, tmp;
 
@@ -166,7 +131,7 @@ int y, x;
 
 /* Allocates an object for tunnels and rooms		-RAK-	*/
 void alloc_object(alloc_set, typ, num)
-int (*alloc_set)();
+int (*alloc_set)(); /* TODO: Figure this out */
 int typ, num;
 {
   register int i, j, k;
@@ -194,8 +159,7 @@ int typ, num;
 
 
 /* Creates objects nearby the coordinates given		-RAK-	*/
-void random_object(y, x, num)
-int y, x, num;
+void random_object(int y, int x, int num)
 {
   register int i, j, k;
   register cave_type *cave_ptr;
@@ -228,6 +192,7 @@ int y, x, num;
 
 /* Converts stat num into string			-RAK-	*/
 void cnv_stat(stat, out_val)
+/* TODO: Fix this */
 int8u stat;
 char *out_val;
 {
@@ -248,8 +213,7 @@ char *out_val;
 
 
 /* Print character stat in given row, column		-RAK-	*/
-void prt_stat(stat)
-int stat;
+void prt_stat(int stat)
 {
   stat_type out_val1;
 
@@ -261,19 +225,14 @@ int stat;
 
 /* Print character info in given row, column		-RAK-	*/
 /* the longest title is 13 characters, so only pad to 13 */
-void prt_field(info, row, column)
-char *info;
-int row, column;
+void prt_field(char *info, int row, int column)
 {
   put_buffer (&blank_string[BLANK_LENGTH-13], row, column);
   put_buffer (info, row, column);
 }
 
 /* Print long number with header at given row, column */
-static void prt_lnum(header, num, row, column)
-char *header;
-int32 num;
-int row, column;
+static void prt_lnum(char *header, int32 num, int row, int column)
 {
   vtype out_val;
 
@@ -282,9 +241,7 @@ int row, column;
 }
 
 /* Print number with header at given row, column	-RAK-	*/
-static void prt_num(header, num, row, column)
-char *header;
-int num, row, column;
+static void prt_num(char *header, int num, int row, int column)
 {
   vtype out_val;
 
@@ -293,9 +250,7 @@ int num, row, column;
 }
 
 /* Print long number at given row, column */
-static void prt_long(num, row, column)
-int32 num;
-int row, column;
+static void prt_long(int32 num, int row, int column)
 {
   vtype out_val;
 
@@ -304,8 +259,7 @@ int row, column;
 }
 
 /* Print number at given row, column	-RAK-	*/
-static void prt_int(num, row, column)
-int num, row, column;
+static void prt_int(int num, int row, int column)
 {
   vtype out_val;
 
@@ -315,8 +269,7 @@ int num, row, column;
 
 
 /* Adjustment for wisdom/intelligence				-JWT-	*/
-int stat_adj(stat)
-int stat;
+int stat_adj(int stat)
 {
   register int value;
 
@@ -538,15 +491,8 @@ void prt_poisoned()
 void prt_state()
 {
   char tmp[16];
-#ifdef ATARIST_MWC
-  int32u holder;
-#endif
 
-#ifdef ATARIST_MWC
-  py.flags.status &= ~(holder = PY_REPEAT);
-#else
   py.flags.status &= ~PY_REPEAT;
-#endif
   if (py.flags.paralysis > 1)
     put_buffer ("Paralysed", 23, 38);
   else if (PY_REST & py.flags.status)
@@ -565,11 +511,7 @@ void prt_state()
 	(void) sprintf (tmp, "Repeat %-3d", command_count);
       else
 	(void) strcpy (tmp, "Repeat");
-#ifdef ATARIST_MWC
-      py.flags.status |= holder;
-#else
       py.flags.status |= PY_REPEAT;
-#endif
       put_buffer (tmp, 23, 38);
       if (PY_SEARCH & py.flags.status)
 	put_buffer ("Search", 23, 38);
@@ -604,15 +546,7 @@ void prt_speed ()
 
 void prt_study()
 {
-#ifdef ATARIST_MWC
-  int32u holder;
-#endif
-
-#ifdef ATARIST_MWC
-  py.flags.status &= ~(holder = PY_STUDY);
-#else
   py.flags.status &= ~PY_STUDY;
-#endif
   if (py.flags.new_spells == 0)
     put_buffer (&blank_string[BLANK_LENGTH-5], 23, 59);
   else
@@ -640,6 +574,7 @@ void prt_winner()
 
 
 int8u modify_stat (stat, amount)
+  /* TODO: Fix this */
 int stat;
 int16 amount;
 {
@@ -677,19 +612,11 @@ int16 amount;
 void set_use_stat(stat)
 int stat;
 {
-#ifdef ATARIST_MWC
-  int32u holder;
-#endif
-
   py.stats.use_stat[stat] = modify_stat (stat, py.stats.mod_stat[stat]);
 
   if (stat == A_STR)
     {
-#ifdef ATARIST_MWC
-      py.flags.status |= (holder = PY_STR_WGT);
-#else
       py.flags.status |= PY_STR_WGT;
-#endif
       calc_bonuses();
     }
   else if (stat == A_DEX)
@@ -710,8 +637,7 @@ int stat;
 
 
 /* Increases a stat by one randomized level		-RAK-	*/
-int inc_stat(stat)
-register int stat;
+int inc_stat(register int stat)
 {
   register int tmp_stat, gain;
 
@@ -742,8 +668,7 @@ register int stat;
 
 
 /* Decreases a stat by one randomized level		-RAK-	*/
-int dec_stat(stat)
-register int stat;
+int dec_stat(register int stat)
 {
   register int tmp_stat, loss;
 
@@ -773,8 +698,7 @@ register int stat;
 
 
 /* Restore a stat.  Return TRUE only if this actually makes a difference. */
-int res_stat (stat)
-int stat;
+int res_stat (int stat)
 {
   register int i;
 
@@ -791,22 +715,13 @@ int stat;
 
 /* Boost a stat artificially (by wearing something). If the display argument
    is TRUE, then increase is shown on the screen. */
-void bst_stat (stat, amount)
-int stat, amount;
+void bst_stat (int stat, int amount)
 {
-#ifdef ATARIST_MWC
-  int32u holder;
-#endif
-
   py.stats.mod_stat[stat] += amount;
 
   set_use_stat (stat);
   /* can not call prt_stat() here, may be in store, may be in inven_command */
-#ifdef ATARIST_MWC
-  py.flags.status |= ((holder = PY_STR) << stat);
-#else
   py.flags.status |= (PY_STR << stat);
-#endif
 }
 
 
@@ -996,8 +911,7 @@ void put_stats()
 
 
 /* Returns a rating of x depending on y			-JWT-	*/
-char *likert(x, y)
-int x, y;
+char *likert(int x, int y)
 {
   switch((x/y))
     {
@@ -1116,22 +1030,12 @@ void get_name()
 {
   prt("Enter your player's name  [press <RETURN> when finished]", 21, 2);
   put_buffer (&blank_string[BLANK_LENGTH-23], 2, 15);
-#if defined(MAC) || defined(AMIGA)
-  /* Force player to give a name, would be nice to get name from chooser
-     (STR -16096), but that name might be too long */
-  while (!get_string(py.misc.name, 2, 15, 23) || py.misc.name[0] == 0);
-#else
   if (!get_string(py.misc.name, 2, 15, 23) || py.misc.name[0] == 0)
     {
       user_name (py.misc.name);
       put_buffer (py.misc.name, 2, 15);
     }
-#endif
   clear_from (20);
-#ifdef MAC
-  /* Use the new name to set save file default name. */
-  initsavedefaults();
-#endif
 }
 
 
@@ -1140,9 +1044,7 @@ void change_name()
 {
   register char c;
   register int flag;
-#ifndef MAC
   vtype temp;
-#endif
 
   flag = FALSE;
   display_char();
@@ -1157,16 +1059,10 @@ void change_name()
 	  flag = TRUE;
 	  break;
 	case 'f':
-#ifdef MAC
-	  /* On mac, file_character() gets filename with std file dialog. */
-	  if (file_character ())
-	    flag = TRUE;
-#else
 	  prt ("File name:", 0, 0);
 	  if (get_string (temp, 0, 10, 60) && temp[0])
 	    if (file_character (temp))
 	      flag = TRUE;
-#endif
 	  break;
 	case ESCAPE: case ' ':
 	case '\n': case '\r':
@@ -1182,14 +1078,10 @@ void change_name()
 
 
 /* Destroy an item in the inventory			-RAK-	*/
-void inven_destroy(item_val)
-int item_val;
+void inven_destroy(int item_val)
 {
   register int j;
   register inven_type *i_ptr;
-#ifdef ATARIST_MWC
-  int32u holder;
-#endif
 
   i_ptr = &inventory[item_val];
   if ((i_ptr->number > 1) && (i_ptr->subval <= ITEM_SINGLE_STACK_MAX))
@@ -1205,18 +1097,13 @@ int item_val;
       invcopy(&inventory[inven_ctr-1], OBJ_NOTHING);
       inven_ctr--;
     }
-#ifdef ATARIST_MWC
-  py.flags.status |= (holder = PY_STR_WGT);
-#else
   py.flags.status |= PY_STR_WGT;
-#endif
 }
 
 
 /* Copies the object in the second argument over the first argument.
    However, the second always gets a number of one except for ammo etc. */
-void take_one_item (s_ptr, i_ptr)
-register inven_type *s_ptr, *i_ptr;
+void take_one_item (register inven_type *s_ptr, register inven_type *i_ptr)
 {
   *s_ptr = *i_ptr;
   if ((s_ptr->number > 1) && (s_ptr->subval >= ITEM_SINGLE_STACK_MIN)
@@ -1226,16 +1113,12 @@ register inven_type *s_ptr, *i_ptr;
 
 
 /* Drops an item from inventory to given location	-RAK-	*/
-void inven_drop(item_val, drop_all)
-register int item_val, drop_all;
+void inven_drop(register int item_val, register int drop_all)
 {
   int i;
   register inven_type *i_ptr;
   vtype prt2;
   bigvtype prt1;
-#ifdef ATARIST_MWC
-  int32u holder;
-#endif
 
   if (cave[char_row][char_col].tptr != 0)
     (void) delete_object(char_row, char_col);
@@ -1269,16 +1152,13 @@ register int item_val, drop_all;
       (void) sprintf (prt2, "Dropped %s", prt1);
       msg_print (prt2);
     }
-#ifdef ATARIST_MWC
-  py.flags.status |= (holder = PY_STR_WGT);
-#else
   py.flags.status |= PY_STR_WGT;
-#endif
 }
 
 
 /* Destroys a type of item on a given percent chance	-RAK-	*/
 int inven_damage(typ, perc)
+  /* TODO: Fix this */
 int (*typ)();
 register int perc;
 {
@@ -1307,8 +1187,7 @@ int weight_limit()
 
 
 /* this code must be identical to the inven_carry() code below */
-int inven_check_num (t_ptr)
-register inven_type *t_ptr;
+int inven_check_num (register inven_type *t_ptr)
 {
   register int i;
 
@@ -1329,8 +1208,7 @@ register inven_type *t_ptr;
 }
 
 /* return FALSE if picking up an object would change the players speed */
-int inven_check_weight(i_ptr)
-register inven_type *i_ptr;
+int inven_check_weight(register inven_type *i_ptr)
 {
   register int i, new_inven_weight;
 
@@ -1353,9 +1231,6 @@ void check_strength()
 {
   register int i;
   register inven_type *i_ptr;
-#ifdef ATARIST_MWC
-  int32u holder;
-#endif
 
   i_ptr = &inventory[INVEN_WIELD];
   if (i_ptr->tval != TV_NOTHING
@@ -1389,27 +1264,19 @@ void check_strength()
       change_speed(i - pack_heavy);
       pack_heavy = i;
     }
-#ifdef ATARIST_MWC
-  py.flags.status &= ~(holder = PY_STR_WGT);
-#else
   py.flags.status &= ~PY_STR_WGT;
-#endif
 }
 
 
 /* Add an item to players inventory.  Return the	*/
 /* item position for a description if needed.	       -RAK-   */
 /* this code must be identical to the inven_check_num() code above */
-int inven_carry(i_ptr)
-register inven_type *i_ptr;
+int inven_carry(register inven_type *i_ptr)
 {
   register int locn, i;
   register int typ, subt;
   register inven_type *t_ptr;
   int known1p, always_known1p;
-#ifdef ATARIST_MWC
-  int32u holder;
-#endif
 
   typ = i_ptr->tval;
   subt = i_ptr->subval;
@@ -1444,11 +1311,7 @@ register inven_type *i_ptr;
     }
 
   inven_weight += i_ptr->number*i_ptr->weight;
-#ifdef ATARIST_MWC
-  py.flags.status |= (holder = PY_STR_WGT);
-#else
   py.flags.status |= PY_STR_WGT;
-#endif
   return locn;
 }
 
@@ -1481,10 +1344,7 @@ int spell;
 /* Print list of spells					-RAK-	*/
 /* if nonconsec is -1: spells numbered consecutively from 'a' to 'a'+num
                   >=0: spells numbered by offset from nonconsec */
-void print_spells(spell, num, comment, nonconsec)
-int *spell;
-register int num;
-int comment, nonconsec;
+void print_spells(int *spell, register int num, int comment, int nonconsec)
 {
   register int i, j;
   vtype out_val;
@@ -1534,12 +1394,8 @@ int comment, nonconsec;
 
 
 /* Returns spell pointer				-RAK-	*/
-int get_spell(spell, num, sn, sc, prompt, first_spell)
-int *spell;
-register int num;
-register int *sn, *sc;
-char *prompt;
-int first_spell;
+int get_spell(int *spell, register int num, register int *sn, register int *sc,
+              char *prompt, int first_spell)
 {
   register spell_type *s_ptr;
   int flag, redraw, offset, i;
@@ -1625,8 +1481,7 @@ int first_spell;
 
 /* calculate number of spells player should have, and learn forget spells
    until that number is met -JEW- */
-void calc_spells(stat)
-int stat;
+void calc_spells(int stat)
 {
   register int i;
   register int32u mask;
@@ -1932,15 +1787,11 @@ void gain_spells()
 
 
 /* Gain some mana if you know at least one spell	-RAK-	*/
-void calc_mana(stat)
-int stat;
+void calc_mana(int stat)
 {
   register int new_mana, levels;
   register struct misc *p_ptr;
   register int32 value;
-#ifdef ATARIST_MWC
-  int32u holder;
-#endif
 
   p_ptr = &py.misc;
   if (spell_learned != 0)
@@ -1979,11 +1830,7 @@ int stat;
 	    }
 	  p_ptr->mana = new_mana;
 	  /* can't print mana here, may be in store or inventory mode */
-#ifdef ATARIST_MWC
-	  py.flags.status |= (holder = PY_MANA);
-#else
 	  py.flags.status |= PY_MANA;
-#endif
 	}
     }
   else if (p_ptr->mana != 0)
@@ -1991,11 +1838,7 @@ int stat;
       p_ptr->mana = 0;
       p_ptr->cmana = 0;
       /* can't print mana here, may be in store or inventory mode */
-#ifdef ATARIST_MWC
-      py.flags.status |= (holder = PY_MANA);
-#else
       py.flags.status |= PY_MANA;
-#endif
     }
 }
 
@@ -2045,6 +1888,7 @@ void prt_experience()
   if (p_ptr->exp > MAX_EXP)
     p_ptr->exp = MAX_EXP;
 
+  /* TODO: Fix this */
   if (p_ptr->lev < MAX_PLAYER_LEVEL)
     while ((player_exp[p_ptr->lev-1] * p_ptr->expfact / 100) <= p_ptr->exp)
       gain_level();
@@ -2062,9 +1906,6 @@ void calc_hitpoints()
   register int hitpoints;
   register struct misc *p_ptr;
   register int32 value;
-#ifdef ATARIST_MWC
-  int32u holder;
-#endif
 
   p_ptr = &py.misc;
   hitpoints = player_hp[p_ptr->lev-1] + (con_adj() * p_ptr->lev);
@@ -2089,18 +1930,13 @@ void calc_hitpoints()
       p_ptr->mhp = hitpoints;
 
       /* can't print hit points here, may be in store or inventory mode */
-#ifdef ATARIST_MWC
-      py.flags.status |= (holder = PY_HP);
-#else
       py.flags.status |= PY_HP;
-#endif
     }
 }
 
 
 /* Inserts a string into a string				*/
-void insert_str(object_str, mtc_str, insert)
-char *object_str, *mtc_str, *insert;
+void insert_str(char *object_str, char *mtc_str, char *insert)
 {
   int obj_len;
   char *bound, *pc;
@@ -2124,12 +1960,7 @@ char *object_str, *mtc_str, *insert;
 
   if (pc <= bound)
     {
-#ifdef __TURBOC__
-      /* Avoid complaint about possible loss of significance.  */
-      (void) strncpy(out_val, object_str, (size_t)(pc-object_str));
-#else
       (void) strncpy(out_val, object_str, (pc-object_str));
-#endif
       /* Turbo C needs int for array index.  */
       out_val[(int)(pc-object_str)] = '\0';
       if (insert)
@@ -2140,60 +1971,8 @@ char *object_str, *mtc_str, *insert;
 }
 
 
-#if 0
-/* this is no longer used anywhere */
-/* Inserts a number into a string				*/
-void insert_num(object_str, mtc_str, number, show_sign)
-char *object_str;
-register char *mtc_str;
-int number;
-int show_sign;
-{
-  int mlen;
-  vtype str1, str2;
-  register char *string, *tmp_str;
-  int flag;
-
-  flag = 1;
-  mlen = strlen(mtc_str);
-  tmp_str = object_str;
-  do
-    {
-      string = index(tmp_str, mtc_str[0]);
-      if (string == CNIL)
-	flag = 0;
-      else
-	{
-	  flag = strncmp(string, mtc_str, mlen);
-	  if (flag)
-	    tmp_str = string+1;
-	}
-    }
-  while (flag);
-  if (string)
-    {
-#ifdef __TURBOC__
-      /* Avoid complaint about possible loss of significance.  */
-      (void) strncpy(str1, object_str, (size_t)(string - object_str));
-#else
-      (void) strncpy(str1, object_str, string - object_str);
-#endif
-      /* Turbo C needs int for array index.  */
-      str1[(int)(string - object_str)] = '\0';
-      (void) strcpy(str2, string + mlen);
-      if ((number >= 0) && (show_sign))
-	(void) sprintf(object_str, "%s+%d%s", str1, number, str2);
-      else
-	(void) sprintf(object_str, "%s%d%s", str1, number, str2);
-    }
-}
-#endif
-
-void insert_lnum(object_str, mtc_str, number, show_sign)
-char *object_str;
-register char *mtc_str;
-int32 number;
-int show_sign;
+void insert_lnum(char *object_str, register char *mtc_str, int32 number, 
+                 int show_sign)
 {
   int mlen;
   vtype str1, str2;
@@ -2251,9 +2030,7 @@ int enter_wiz_mode()
 
 
 /* Weapon weight VS strength and dexterity		-RAK-	*/
-int attack_blows(weight, wtohit)
-int weight;
-int *wtohit;
+int attack_blows(int weight, int *wtohit)
 {
   register int adj_weight;
   register int str_index, dex_index, s, d;
@@ -2288,22 +2065,12 @@ int *wtohit;
 
 
 /* Special damage due to magical abilities of object	-RAK-	*/
-int tot_dam(i_ptr, tdam, monster)
-register inven_type *i_ptr;
-register int tdam;
-int monster;
+int tot_dam(register inven_type *i_ptr, register int tdam, int monster)
 {
   register creature_type *m_ptr;
   register recall_type *r_ptr;
-#ifdef ATARIST_MWC
-  int32u holder;
-#endif
 
-#ifdef ATARIST_MWC
-  if ((i_ptr->flags & (holder = TR_EGO_WEAPON)) &&
-#else
   if ((i_ptr->flags & TR_EGO_WEAPON) &&
-#endif
       (((i_ptr->tval >= TV_SLING_AMMO) && (i_ptr->tval <= TV_ARROW)) ||
        ((i_ptr->tval >= TV_HAFTED) && (i_ptr->tval <= TV_SWORD)) ||
        (i_ptr->tval == TV_FLASK)))
@@ -2317,13 +2084,8 @@ int monster;
 	  r_ptr->r_cdefense |= CD_DRAGON;
 	}
       /* Slay Undead  */
-#ifdef ATARIST_MWC
-      else if ((m_ptr->cdefense & CD_UNDEAD)
-	       && (i_ptr->flags & (holderr = TR_SLAY_UNDEAD)))
-#else
       else if ((m_ptr->cdefense & CD_UNDEAD)
 	       && (i_ptr->flags & TR_SLAY_UNDEAD))
-#endif
 	{
 	  tdam = tdam * 3;
 	  r_ptr->r_cdefense |= CD_UNDEAD;
@@ -2342,25 +2104,15 @@ int monster;
 	  r_ptr->r_cdefense |= CD_EVIL;
 	}
       /* Frost	       */
-#ifdef ATARIST_MWC
-      else if ((m_ptr->cdefense & CD_FROST)
-	       && (i_ptr->flags & (holder = TR_FROST_BRAND)))
-#else
       else if ((m_ptr->cdefense & CD_FROST)
 	       && (i_ptr->flags & TR_FROST_BRAND))
-#endif
 	{
 	  tdam = tdam * 3 / 2;
 	  r_ptr->r_cdefense |= CD_FROST;
 	}
       /* Fire	      */
-#ifdef ATARIST_MWC
-      else if ((m_ptr->cdefense & CD_FIRE)
-	       && (i_ptr->flags & (holder = TR_FLAME_TONGUE)))
-#else
       else if ((m_ptr->cdefense & CD_FIRE)
 	       && (i_ptr->flags & TR_FLAME_TONGUE))
-#endif
 	{
 	  tdam = tdam * 3 / 2;
 	  r_ptr->r_cdefense |= CD_FIRE;
@@ -2371,9 +2123,8 @@ int monster;
 
 
 /* Critical hits, Nasty way to die.			-RAK-	*/
-int critical_blow(weight, plus, dam, attack_type)
-register int weight, plus, dam;
-int attack_type;
+int critical_blow(register int weight, register int plus, register int dam, 
+                  int attack_type)
 {
   register int critical;
 
@@ -2411,9 +2162,7 @@ int attack_type;
 
 
 /* Given direction "dir", returns new row, column location -RAK- */
-int mmove(dir, y, x)
-int dir;
-register int *y, *x;
+int mmove(int dir, register int *y, register int *x)
 {
   register int new_row, new_col;
   int bool;
@@ -2483,9 +2232,7 @@ int player_saves()
 
 
 /* Finds range of item in inventory list		-RAK-	*/
-int find_range(item1, item2, j, k)
-int item1, item2;
-register int *j, *k;
+int find_range(int item1, int item2, register int *j, register int *k)
 {
   register int i;
   register inven_type *i_ptr;
@@ -2524,8 +2271,7 @@ register int *j, *k;
 
 
 /* Teleport the player to a new location		-RAK-	*/
-void teleport(dis)
-int dis;
+void teleport(int dis)
 {
   register int y, x, i, j;
 
