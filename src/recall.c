@@ -6,10 +6,8 @@
    not for profit purposes provided that this copyright and statement are
    included in all such copies. */
 
-#ifdef __TURBOC__
-#include	<stdio.h>
-#endif /* __TURBOC__ */
- 
+#include <stdio.h>
+
 #include "config.h"
 #include "constant.h"
 #include "types.h"
