@@ -9,7 +9,7 @@ OWNER = games
 GROUP = games
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -O -g
+CFLAGS = -Wall -Wextra -Werror -g
 LFLAGS = -lcurses
 #-ltermcap
 
