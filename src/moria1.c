@@ -6,39 +6,21 @@
    not for profit purposes provided that this copyright and statement are
    included in all such copies. */
 
-#ifdef __TURBOC__
-#include	<stdlib.h>
-#endif
-
+#include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "config.h"
 #include "constant.h"
 #include "types.h"
 #include "externs.h"
 
-#ifdef USG
-#ifndef ATARIST_MWC
-#include <string.h>
-#else
-char *strcat();
-int strlen();
-#endif
-#else
-#include <strings.h>
-#endif
-
 #if defined(LINT_ARGS)
 static void inven_screen(int);
 static char map_roguedir(char);
 static void sub1_move_light(int, int, int, int);
 static void sub3_move_light(int, int, int, int);
-#endif
-
-#ifdef ATARIST_TC
-/* Include this to get prototypes for standard library functions.  */
-#include <stdlib.h>
 #endif
 
 /* Changes speed of monsters relative to player		-RAK-	*/
