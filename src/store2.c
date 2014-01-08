@@ -6,55 +6,14 @@
    not for profit purposes provided that this copyright and statement are
    included in all such copies. */
 
-#ifdef __TURBOC__
-#include	<stdio.h>
-#include	<stdlib.h>
-#endif /* __TURBOC__ */
- 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 #include "config.h"
 #include "constant.h"
 #include "types.h"
 #include "externs.h"
-
-#ifdef USG
-#ifndef ATARIST_MWC
-#include <string.h>
-#endif
-#else
-#include <strings.h>
-#endif
-
-#if defined(LINT_ARGS)
-static void prt_comment1(void);
-static void prt_comment2(int32, int32, int);
-static void prt_comment3(int32, int32, int);
-static void prt_comment4(void);
-static void prt_comment5(void);
-static void prt_comment6(void);
-static void display_commands(void);
-static void haggle_commands(int);
-static void display_inventory(int, int);
-static void display_cost(int, int);
-static void store_prt_gold(void);
-static void display_store(int, int);
-static int get_store_item(int *, char *, int, int);
-static int increase_insults(int);
-static void decrease_insults(int);
-static int haggle_insults(int);
-static int get_haggle(char *, int32 *, int);
-static int receive_offer(int, char *, int32 *, int32, int, int);
-static int purchase_haggle(int, int32 *, struct inven_type *);
-static int sell_haggle(int, int32 *, struct inven_type *);
-static int store_purchase(int, int *);
-static int store_sell(int, int *);
-#endif
-
-#ifdef ATARIST_TC
-/* Include this to get prototypes for standard library functions.  */
-#include <stdlib.h>
-#endif
-
-long atol();
 
 static char *comment1[14] = {
   "Done!",  "Accepted!",  "Fine.",  "Agreed!",  "Ok.",  "Taken!",
@@ -1000,11 +959,7 @@ int store_num, *cur_top;
   last_item = -1;
   for (counter = 0; counter < inven_ctr; counter++)
     {
-#ifdef MAC
-      flag = store_buy(store_num, (inventory[counter].tval));
-#else
       flag = (*store_buy[store_num])(inventory[counter].tval);
-#endif
       mask[counter] = flag;
       if (flag)
 	{
