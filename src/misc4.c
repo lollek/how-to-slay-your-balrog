@@ -6,28 +6,13 @@
    not for profit purposes provided that this copyright and statement are
    included in all such copies. */
 
-#ifdef __TURBOC__
-#include	<stdio.h>
-#endif
+#include <stdio.h>
+#include <string.h>
 
 #include "config.h"
 #include "constant.h"
 #include "types.h"
 #include "externs.h"
-
-#ifndef USG
-#include <sys/types.h>
-#include <sys/param.h>
-#endif
-
-#ifdef USG
-#ifndef ATARIST_MWC
-#include <string.h>
-#endif
-#else
-#include <strings.h>
-#endif
-
 
 /* Add a comment to an object description.		-CJS- */
 void scribe_object()
@@ -61,6 +46,7 @@ void scribe_object()
 
 /* Append an additional comment to an object description.	-CJS- */
 void add_inscribe(i_ptr, type)
+  /* TODO:Fix this */
 inven_type *i_ptr;
 int8u type;
 {
@@ -68,9 +54,7 @@ int8u type;
 }
 
 /* Replace any existing comment in an object description with a new one. CJS*/
-void inscribe(i_ptr, str)
-inven_type *i_ptr;
-char *str;
+void inscribe(inven_type *i_ptr, char *str)
 {
   (void) strcpy(i_ptr->inscrip, str);
 }
