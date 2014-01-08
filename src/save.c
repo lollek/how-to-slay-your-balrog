@@ -7,81 +7,25 @@
    included in all such copies. */
 
 /* For debugging the savefile code on systems with broken compilers.  */
-#if 0
-#define DEBUG(x)	x
-#else
 #define DEBUG(x)
-#endif
 
 #include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <time.h>
+
+#include <sys/stat.h>
+#include <sys/file.h>
 
 #ifndef STDIO_LOADED
 #define STDIO_LOADED
 #endif
 
-#ifdef __TURBOC__
-#include	<io.h>
-#endif /* __TURBOC__ */
- 
 #include "config.h"
 #include "constant.h"
 #include "types.h"
-
-#ifndef USG
-/* stuff only needed for Berkeley UNIX */
-#include <sys/types.h>
-#include <sys/file.h>
-#include <sys/param.h>
-#endif
-
-#ifdef VMS
-#include <string.h>
-#include <file.h>
-#else
-#ifdef USG
-#ifndef ATARIST_MWC
-#include <string.h>
-#ifndef ATARIST_TC
-#include <fcntl.h>
-#endif
-#else
-#include "string.h"
-#endif
-#else
-#include <strings.h>
-#endif
-#endif
-
-/* This must be included after fcntl.h, which has a prototype for `open'
-   on some systems.  Otherwise, the `open' prototype conflicts with the
-   `topen' declaration.  */
 #include "externs.h"
 
-#ifdef ATARIST_TC
-#include <time.h>
-#endif
-
-DEBUG(static FILE *logfile);
-
-#if defined(LINT_ARGS)
-static int sv_write(void);
-static void wr_byte(int8u);
-static void wr_short(int16u);
-static void wr_long(int32u);
-static void wr_bytes(int8u *, int);
-static void wr_string(char *);
-static void wr_shorts(int16u *, int);
-static void wr_item(inven_type *);
-static void wr_monster(monster_type *);
-static void rd_byte(int8u *);
-static void rd_short(int16u *);
-static void rd_long(int32u *);
-static void rd_bytes(int8u *, int);
-static void rd_string(char *);
-static void rd_shorts(int16u *, int);
-static void rd_item(inven_type *);
-static void rd_monster(monster_type *);
-#else
 static int sv_write();
 static void wr_byte();
 static void wr_short();
@@ -99,17 +43,6 @@ static void rd_string();
 static void rd_shorts();
 static void rd_item();
 static void rd_monster();
-#endif
-
-#if !defined(ATARIST_MWC)
-#ifdef MAC
-#include <time.h>
-#else
-long time();
-#endif
-#else
-char *malloc();
-#endif
 
 /* these are used for the save file, to avoid having to pass them to every
    procedure */
@@ -136,9 +69,6 @@ static int sv_write()
   register struct flags *f_ptr;
   store_type *st_ptr;
   struct misc *m_ptr;
-#if defined(MSDOS) || defined(ATARI_ST)
-  inven_type *t_ptr;
-#endif
 
   /* clear the death flag when creating a HANGUP save file, so that player
      can see tombstone when restart */
@@ -331,11 +261,7 @@ static int sv_write()
     }
 
   /* save the current time in the savefile */
-#ifdef MAC
-  l = time((time_t *)0);
-#else
   l = time((long *)0);
-#endif
   if (l < start_time)
     {
       /* someone is messing with the clock!, assume that we have been
@@ -420,27 +346,6 @@ static int sv_write()
   wr_byte((int8u)count);
   wr_byte(prev_char);
 
-#if defined(MSDOS) || defined(ATARI_ST)
-  /* must change graphics symbols for walls and floors back to default chars,
-     this is necessary so that if the user changes the graphics line, the
-     program will be able change all existing walls and floors to the new
-     symbol */
-  /* Or if the user moves the savefile from one machine to another, we
-     must have a consistent representation here.  */
-  t_ptr = &t_list[tcptr - 1];
-  for (i = tcptr - 1; i >= MIN_TRIX; i--)
-    {
-#ifdef MSDOS
-      if (t_ptr->tchar == wallsym)
-	t_ptr->tchar = '#';
-#endif
-#ifdef ATARI_ST
-      if (t_ptr->tchar == (unsigned char)240)
-	t_ptr->tchar = '#';
-#endif
-      t_ptr--;
-    }
-#endif
   wr_short((int16u)tcptr);
   for (i = MIN_TRIX; i < tcptr; i++)
     wr_item(&t_list[i]);
@@ -452,58 +357,6 @@ static int sv_write()
     return FALSE;
   return TRUE;
 }
-
-#ifdef MAC
-
-/* Set up prior to actual save, do the save, then clean up */
-/* Notice that Mac version of this function takes a parameter */
-/* To do a "save as" set always_ask */
-/* To do a "save" clear always_ask */
-
-int save_char(always_ask)
-int always_ask;
-{
-  int rc, already_set, proceed;
-  int16 vrefnum;
-
-  /* cannot rely on _save_char to do this because we may put up a dialog */
-  if (character_saved) return(TRUE);
-
-  enablefilemenu(FALSE);
-
-  already_set = getsavedefaults(savefile, &vrefnum);
-
-  if (!already_set || always_ask)
-    {
-      /* Here if always_ask or user has not yet specified a save file */
-      /* User specifies a save file when he restarts a previous one */
-      sfposition(vrefnum);
-      proceed = doputfile(death ? "Save memories as:" : "Save game as:",
-			  savefile, &vrefnum);
-    }
-  else
-    proceed = TRUE;
-
-  if (proceed)
-    {
-      changedirectory(vrefnum);
-      rc = _save_char(savefile);
-      restoredirectory();
-    }
-  else
-    rc = FALSE;
-
-  if (rc)
-    (void) setfileinfo(savefile, vrefnum, SAVE_FTYPE);
-
-  enablefilemenu(TRUE);
-
-  return(rc);
-}
-
-#else
-
-/* The Mac has different logic here -- See above */
 
 int save_char()
 {
@@ -542,7 +395,6 @@ int save_char()
 #endif
   return TRUE;
 }
-#endif
 
 int _save_char(fnam)
 char *fnam;
@@ -562,16 +414,8 @@ char *fnam;
   ok = FALSE;
   /* VMS files have version numbers, so don't worry about overwriting
      the old save file. */
-#if !defined(ATARIST_MWC) && !defined(VMS)
   fd = -1;
   fileptr = NULL;		/* Do not assume it has been init'ed */
-#if defined(MAC) || defined(AMIGA)
-  /* The Mac version automatically overwrites */
-  fd = open(fnam, O_RDWR|O_CREAT|O_TRUNC);
-#ifdef MAC
-  macbeginwait ();
-#endif
-#else
   fd = open(fnam, O_RDWR|O_CREAT|O_EXCL, 0600);
   if (fd < 0 && access(fnam, 0) >= 0 &&
       (from_savefile ||
@@ -580,20 +424,11 @@ char *fnam;
       (void) chmod(fnam, 0600);
       fd = open(fnam, O_RDWR|O_TRUNC, 0600);
     }
-#endif
   if (fd >= 0)
     {
       (void) close(fd);
-#endif /* !ATARIST_MWC && !VMS */
-      /* GCC for atari st defines atarist */
-#if defined(atarist) || defined(ATARI_ST) || defined(THINK_C) || defined(MSDOS)
-      fileptr = fopen(savefile, "wb");
-#else
       fileptr = fopen(savefile, "w");
-#endif
-#if !defined(ATARIST_MWC) && !defined(VMS)
     }
-#endif
   DEBUG(logfile = fopen("IO_LOG", "a"));
   DEBUG(fprintf (logfile, "Saving data to %s\n", savefile));
   if (fileptr != NULL)
@@ -617,10 +452,6 @@ char *fnam;
 	ok = FALSE;
     }
 
-#ifdef MAC
-  macendwait ();
-#endif
-
   if (!ok)
     {
       if (fd >= 0)
@@ -643,38 +474,11 @@ char *fnam;
 }
 
 
-#ifdef MAC
-/* Wrapper to set the appropriate directory */
 int get_char(generate)
 int *generate;
-{
-  int rc, exit_flag;
-  int16 vrefnum;
-
-  (void) getsavedefaults(savefile, &vrefnum);
-
-  changedirectory(vrefnum);
-  rc = _get_char(generate, &exit_flag);
-  restoredirectory();
-
-  if (exit_flag)
-    exit_game();
-
-  return(rc);
-}
-#endif
-
-/* Certain checks are ommitted for the wizard. -CJS- */
-
-#ifdef MAC
-int _get_char(generate, exit_flag)
-int *generate, *exit_flag;
-#else
-int get_char(generate)
-int *generate;
-#endif
 {
   register int i, j;
+  register unsigned iu;
   int fd, c, ok, total_count;
   int32u l, age, time_saved;
   vtype temp;
@@ -687,28 +491,17 @@ int *generate;
   store_type *st_ptr;
   int8u char_tmp, ychar, xchar, count;
   int8u version_maj, version_min, patch_level;
-#if defined(MSDOS) || defined(ATARI_ST)
-  inven_type *t_ptr;
-#endif
-
-#ifdef MAC
-  *exit_flag = FALSE;
-#endif
 
   nosignals();
   *generate = TRUE;
   fd = -1;
 
-#ifndef MAC
-  /* Not required for Mac, because the file name is obtained through a dialog.
-     There is no way for a non existnat file to be specified.  -BS-	*/
   if (access(savefile, 0) != 0)
     {
       signals();
       msg_print("Savefile does not exist.");
       return FALSE;	/* Don't bother with messages here. File absent. */
     }
-#endif
 
   clear_screen();
 
@@ -721,17 +514,9 @@ int *generate;
   /* Allow restoring a file belonging to someone else, if we can delete it. */
   /* Hence first try to read without doing a chmod. */
 
-#if defined(MAC) || defined(AMIGA)
-  else if ((fd = open(savefile, O_RDONLY)) < 0)
-#else
-#ifdef ATARI_ST
-  else if (FALSE)
-#else
   else if ((fd = open(savefile, O_RDONLY, 0)) < 0
 	   && (chmod(savefile, 0400) < 0 ||
 	       (fd = open(savefile, O_RDONLY, 0)) < 0))
-#endif
-#endif
     msg_print("Can't open file for reading.");
   else
     {
@@ -740,17 +525,9 @@ int *generate;
 
       (void) close(fd);
       /* GCC for atari st defines atarist */
-#if defined(atarist) || defined(ATARI_ST) || defined(THINK_C) || defined(MSDOS)
-      fileptr = fopen(savefile, "rb");
-#else
       fileptr = fopen(savefile, "r");
-#endif
       if (fileptr == NULL)
 	goto error;
-
-#ifdef MAC
-      macbeginwait ();
-#endif
 
       prt("Restoring Memory...", 0, 0);
       put_qio();
@@ -1028,11 +805,7 @@ int *generate;
 	      || (version_min == 2 && patch_level >= 2))
 	    rd_long ((int32u *)&birth_date);
 	  else
-#ifdef MAC
-	    birth_date = time((time_t *)0);
-#else
 	    birth_date = time((long *)0);
-#endif
 	}
       if ((c = getc(fileptr)) == EOF || (l & 0x80000000L))
 	{
@@ -1120,10 +893,8 @@ int *generate;
 	  rd_byte(&char_tmp);
 	  for (i = count; i > 0; i--)
 	    {
-#ifndef ATARIST_MWC
 	      if (c_ptr >= &cave[MAX_HEIGHT][0])
 		goto error;
-#endif
 	      c_ptr->fval = char_tmp & 0xF;
 	      c_ptr->lr = (char_tmp >> 4) & 0x1;
 	      c_ptr->fm = (char_tmp >> 5) & 0x1;
@@ -1144,23 +915,6 @@ int *generate;
 	goto error;
       for (i = MIN_MONIX; i < mfptr; i++)
 	rd_monster(&m_list[i]);
-
-#if defined(MSDOS) || defined(ATARI_ST)
-      /* change walls and floors to graphic symbols */
-      t_ptr = &t_list[tcptr - 1];
-      for (i = tcptr - 1; i >= MIN_TRIX; i--)
-	{
-#ifdef MSDOS
-	  if (t_ptr->tchar == '#')
-	    t_ptr->tchar = wallsym;
-#endif
-#ifdef ATARI_ST
-	  if (t_ptr->tchar == '#')
-	    t_ptr->tchar = (unsigned char) 240;
-#endif
-	  t_ptr--;
-	}
-#endif
 
       *generate = FALSE;  /* We have restored a cave - no need to generate. */
 
@@ -1216,10 +970,6 @@ int *generate;
       if (fd >= 0)
 	(void) close(fd);
 
-#ifdef MAC
-      macendwait ();
-#endif
-
       if (!ok)
 	msg_print("Error during reading of file.");
       else
@@ -1235,6 +985,7 @@ int *generate;
 Score will not be added to scoreboard.");
 	      msg_print (temp);
 	    }
+          /* TODO: Add parentesis when after checking how this works */
 	  else if ((!noscore & 0x04) && duplicate_character ())
 	    {
 	      (void) sprintf (temp, "This character is already on the \
@@ -1252,11 +1003,7 @@ scoreboard; it will not be scored again.");
 	      /* rotate store inventory, depending on how old the save file */
 	      /* is foreach day old (rounded up), call store_maint */
 	      /* calculate age in seconds */
-#ifdef MAC
-	      start_time = time((time_t *)0);
-#else
 	      start_time = time((long *)0);
-#endif
 	      /* check for reasonable values of time here ... */
 	      if (start_time < time_saved)
 		age = 0;
@@ -1265,7 +1012,7 @@ scoreboard; it will not be scored again.");
 
 	      age = (age + 43200L) / 86400L;  /* age in days */
 	      if (age > 10) age = 10; /* in case savefile is very old */
-	      for (i = 0; i < age; i++)
+	      for (iu = 0; iu < age; iu++)
 		store_maint();
 	    }
 
@@ -1293,11 +1040,7 @@ scoreboard; it will not be scored again.");
   turn = -1;
   prt("Please try again without that savefile.", 1, 0);
   signals();
-#ifdef MAC
-  *exit_flag = TRUE;
-#else
   exit_game();
-#endif
 
   return FALSE;	/* not reached, unless on mac */
 }
