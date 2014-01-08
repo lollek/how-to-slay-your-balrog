@@ -11,26 +11,8 @@
 #include "types.h"
 #include "externs.h"
 
-#ifdef USG
-#ifndef ATARIST_MWC
-#include <string.h>
-#endif
-#else
-#include <strings.h>
-#endif
-
-#if defined(LINT_ARGS)
-static void insert_store(int, int, int32, struct inven_type *);
-static void store_create(int);
-#else
-static void insert_store();
-static void store_create();
-#endif
-
-
 /* Returns the value for any given object		-RAK-	*/
-int32 item_value(i_ptr)
-register inven_type *i_ptr;
+int32 item_value(register inven_type *i_ptr)
 {
   register int32 value;
 
@@ -143,10 +125,7 @@ register inven_type *i_ptr;
 
 
 /* Asking price for an item				-RAK-	*/
-int32 sell_price(snum, max_sell, min_sell, item)
-int snum;
-int32 *max_sell, *min_sell;
-inven_type *item;
+int32 sell_price(int snum, int32 *max_sell, int32 *min_sell, inven_type *item)
 {
   register int32 i;
   register store_type *s_ptr;
@@ -170,9 +149,7 @@ inven_type *item;
 
 
 /* Check to see if he will be carrying too many objects	-RAK-	*/
-int store_check_num(t_ptr, store_num)
-inven_type *t_ptr;
-int store_num;
+int store_check_num(inven_type *t_ptr, int store_num)
 {
   register int store_check, i;
   register store_type *s_ptr;
@@ -437,6 +414,7 @@ int32 price, minprice;
 
   s_ptr = &store[store_num];
   if (minprice > 9)
+  {
     if (price == minprice)
       {
 	if (s_ptr->good_buy < MAX_SHORT)
@@ -447,4 +425,5 @@ int32 price, minprice;
 	if (s_ptr->bad_buy < MAX_SHORT)
 	  s_ptr->bad_buy++;
       }
+  }
 }
