@@ -6,26 +6,14 @@
    not for profit purposes provided that this copyright and statement are
    included in all such copies. */
 
-#ifdef __TURBOC__
-#include	<stdio.h>
-#include	<stdlib.h>
-#endif /* __TURBOC__ */
- 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "config.h"
 #include "constant.h"
 #include "types.h"
 #include "externs.h"
-
-#ifdef USG
-#ifndef ATARIST_MWC
-#include <string.h>
-#else
-char *strcat();
-char *strcpy();
-#endif
-#else
-#include <strings.h>
-#endif
 
 #if defined(LINT_ARGS)
 static int movement_rate(int16);
@@ -36,12 +24,6 @@ static void make_move(int, int *, int32u *);
 static void mon_cast_spell(int, int *);
 static void mon_move(int, int32u *);
 #endif
-
-#ifdef ATARIST_TC
-/* Include this to get prototypes for standard library functions.  */
-#include <stdlib.h>
-#endif
-
 
 /* Updates screen when monsters move about		-RAK-	*/
 void update_mon(monptr)
@@ -1065,6 +1047,7 @@ int32u *rcmove;
 	    }
 	  /* Creature has attempted to move on player?	   */
 	  if (do_move)
+          {
 	    if (c_ptr->cptr == 1)
 	      {
 		/* if the monster is not lit, must call update_mon, it may
@@ -1108,6 +1091,7 @@ int32u *rcmove;
 		else
 		  do_move = FALSE;
 	      }
+          }
 	  /* Creature has been allowed move.	 */
 	  if (do_move)
 	    {
@@ -1736,6 +1720,7 @@ int attack;
 			&& cave[m_ptr->fy][m_ptr->fx].fval >= MIN_CAVE_WALL))
 		  {
 		    if (m_ptr->csleep > 0)
+                    {
 		      if (py.flags.aggravate)
 			m_ptr->csleep = 0;
 		      else if ((py.flags.rest == 0 && py.flags.paralysis < 1)
@@ -1755,6 +1740,7 @@ int attack;
 				}
 			    }
 			}
+                    }
 		    if (m_ptr->stunned != 0)
 		      {
 			/* NOTE: Balrog = 100*100 = 10000, it always
