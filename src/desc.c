@@ -6,33 +6,19 @@
    not for profit purposes provided that this copyright and statement are
    included in all such copies. */
 
-#ifdef __TURBOC__
-#include	<stdio.h>
-#include	<stdlib.h>
-#endif /* __TURBOC__ */
- 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "config.h"
 #include "constant.h"
 #include "types.h"
 #include "externs.h"
 
-#ifdef USG
-#ifndef ATARIST_MWC
-#include <string.h>
-#endif
-#else
-#include <strings.h>
-#endif
-
 #if defined(LINT_ARGS)
 static void unsample(struct inven_type *);
 #else
 static void unsample();
-#endif
-
-#ifdef ATARIST_TC
-/* Include this to get prototypes for standard library functions.  */
-#include <stdlib.h>
 #endif
 
 char titles[MAX_TITLES][10];
