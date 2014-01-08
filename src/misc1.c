@@ -6,50 +6,23 @@
    not for profit purposes provided that this copyright and statement are
    included in all such copies. */
 
+#include <stdlib.h>
+#include <time.h>
+
 #include "config.h"
 #include "constant.h"
 #include "types.h"
 #include "externs.h"
 
-#ifdef __TURBOC__
-#include	<stdlib.h>
-#endif
-
-#ifdef Pyramid
-#include <sys/time.h>
-#else
-#include <time.h>
-#endif
-#if !defined(GEMDOS) && !defined(MAC) && !defined(AMIGA)
-#ifndef VMS
-#include <sys/types.h>
-#else
-#include <types.h>
-#endif
-#endif
-
-#if !defined(ATARIST_MWC) && !defined(MAC) && !defined(VMS) && !defined(AMIGA)
-long time();
-#endif
 struct tm *localtime();
 
-#if defined(LINT_ARGS)
-static void compact_objects(void);
-#endif
-
-
 /* gets a new random seed for the random number generator */
-void init_seeds(seed)
-int32u seed;
+void init_seeds(int32u seed)
 {
   register int32u clock_var;
 
   if (seed == 0)
-#ifdef MAC
-    clock_var = time((time_t *)0);
-#else
     clock_var = time((long *)0);
-#endif
   else
     clock_var = seed;
   randes_seed = (int32) clock_var;
@@ -68,8 +41,7 @@ int32u seed;
 static int32u old_seed;
 
 /* change to different random number generator state */
-void set_seed(seed)
-int32u seed;
+void set_seed(int32u seed)
 {
   old_seed = get_rnd_seed ();
 
@@ -92,11 +64,7 @@ int check_time()
   long clock_var;
   register struct tm *tp;
 
-#ifdef MAC
-  clock_var = time((time_t *)0);
-#else
   clock_var = time((long *)0);
-#endif
   tp = localtime(&clock_var);
   if (days[tp->tm_wday][tp->tm_hour+4] == 'X')
     return TRUE;
@@ -185,10 +153,9 @@ int mean, stand;
 
 /* Returns position of first set bit			-RAK-	*/
 /*     and clears that bit */
-int bit_pos(test)
-int32u *test;
+int bit_pos(int32u *test)
 {
-  register int i;
+  register unsigned i;
   register int32u mask = 0x1;
 
   for (i = 0; i < sizeof(*test)*8; i++) {
@@ -204,8 +171,7 @@ int32u *test;
 }
 
 /* Checks a co-ordinate for in bounds status		-RAK-	*/
-int in_bounds(y, x)
-int y, x;
+int in_bounds(int y, int x)
 {
   if ((y > 0) && (y < cur_height-1) && (x > 0) && (x < cur_width-1))
     return(TRUE);
@@ -229,8 +195,7 @@ void panel_bounds()
 /* Given an row (y) and col (x), this routine detects  -RAK-	*/
 /* when a move off the screen has occurred and figures new borders.
    Force forcses the panel bounds to be recalculated, useful for 'W'here. */
-int get_panel(y, x, force)
-int y, x, force;
+int get_panel(int y, int x, int force)
 {
   register int prow, pcol;
   register int panel;
@@ -271,8 +236,7 @@ int y, x, force;
 
 /* Tests a given point to see if it is within the screen -RAK-	*/
 /* boundaries.							  */
-int panel_contains(y, x)
-register int y, x;
+int panel_contains(register int y, register int x)
 {
   if ((y >= panel_row_min) && (y <= panel_row_max) &&
       (x >= panel_col_min) && (x <= panel_col_max))
@@ -283,8 +247,7 @@ register int y, x;
 
 
 /* Distance between two points				-RAK-	*/
-int distance(y1, x1, y2, x2)
-int y1, x1, y2, x2;
+int distance(int y1, int x1, int y2, int x2)
 {
   register int dy, dx;
 
@@ -301,8 +264,7 @@ int y1, x1, y2, x2;
 /* Checks points north, south, east, and west for a wall -RAK-	*/
 /* note that y,x is always in_bounds(), i.e. 0 < y < cur_height-1, and
    0 < x < cur_width-1	*/
-int next_to_walls(y, x)
-register int y, x;
+int next_to_walls(register int y, register int x)
 {
   register int i;
   register cave_type *c_ptr;
@@ -328,8 +290,7 @@ register int y, x;
 /* Checks all adjacent spots for corridors		-RAK-	*/
 /* note that y, x is always in_bounds(), hence no need to check that
    j, k are in_bounds(), even if they are 0 or cur_x-1 is still works */
-int next_to_corr(y, x)
-register int y, x;
+int next_to_corr(register int y, register int x)
 {
   register int k, j, i;
   register cave_type *c_ptr;
@@ -349,8 +310,7 @@ register int y, x;
 
 
 /* generates damage for 2d6 style dice rolls */
-int damroll(num, sides)
-int num, sides;
+int damroll(int num, int sides)
 {
   register int i, sum = 0;
 
@@ -359,8 +319,7 @@ int num, sides;
   return(sum);
 }
 
-int pdamroll(array)
-int8u *array;
+int pdamroll(int8u *array)
 {
   return damroll((int)array[0], (int)array[1]);
 }
@@ -382,8 +341,7 @@ int8u *array;
 /* Because this function uses (short) ints for all calculations, overflow
    may occur if deltaX and deltaY exceed 90. */
 
-int los(fromY, fromX, toY, toX)
-int fromY, fromX, toY, toX;
+int los(int fromY, int fromX, int toY, int toX)
 {
   register int tmp, deltaX, deltaY;
 
@@ -542,8 +500,7 @@ int fromY, fromX, toY, toX;
 
 
 /* Returns symbol for given row, column			-RAK-	*/
-unsigned char loc_symbol(y, x)
-int y, x;
+unsigned char loc_symbol(int y, int x)
 {
   register cave_type *cave_ptr;
   register struct flags *f_ptr;
@@ -566,23 +523,16 @@ int y, x;
     return t_list[cave_ptr->tptr].tchar;
   else if (cave_ptr->fval <= MAX_CAVE_FLOOR)
     {
-#ifdef MSDOS
-      return floorsym;
-#else
       return '.';
-#endif
     }
   else if (cave_ptr->fval == GRANITE_WALL || cave_ptr->fval == BOUNDARY_WALL
 	   || highlight_seams == FALSE)
     {
-#ifdef MSDOS
-      return wallsym;
-#else
 #ifndef ATARI_ST
       return '#';
 #else
+      /* TODO: This should probably be removed */
       return (unsigned char)240;
-#endif
 #endif
     }
   else	/* Originally set highlight bit, but that is not portable, now use
@@ -594,8 +544,7 @@ int y, x;
 
 
 /* Tests a spot for light or field mark status		-RAK-	*/
-int test_light(y, x)
-int y, x;
+int test_light(int y, int x)
 {
   register cave_type *cave_ptr;
 
@@ -687,8 +636,7 @@ int compact_monsters()
 
 
 /* Add to the players food time				-RAK-	*/
-void add_food(num)
-int num;
+void add_food(int num)
 {
   register struct flags *p_ptr;
   register int extra, penalty;
@@ -733,17 +681,14 @@ int popm()
 
 
 /* Gives Max hit points					-RAK-	*/
-int max_hp(array)
-int8u *array;
+int max_hp(int8u *array)
 {
   return(array[0] * array[1]);
 }
 
 
 /* Places a monster at given location			-RAK-	*/
-int place_monster(y, x, z, slp)
-register int y, x, z;
-int slp;
+int place_monster(register int y, register int x, register int z, int slp)
 {
   register int cur_pos;
   register monster_type *mon_ptr;
@@ -821,8 +766,7 @@ void place_win_monster()
 /* Return a monster suitable to be placed at a given level.  This makes
    high level monsters (up to the given level) slightly more common than
    low level monsters at any given level.   -CJS- */
-int get_mons_num (level)
-int level;
+int get_mons_num (int level)
 {
   register int i, j, num;
 
@@ -861,9 +805,7 @@ int level;
 
 
 /* Allocates a random monster				-RAK-	*/
-void alloc_monster(num, dis, slp)
-int num, dis;
-int slp;
+void alloc_monster(int num, int dis, int slp)
 {
   register int y, x, i;
   int l;
@@ -891,9 +833,7 @@ int slp;
 
 
 /* Places creature adjacent to given location		-RAK-	*/
-int summon_monster(y, x, slp)
-int *y, *x;
-int slp;
+int summon_monster(int *y, int *x, int slp)
 {
   register int i, j, k;
   int l, summon;
@@ -928,8 +868,7 @@ int slp;
 
 
 /* Places undead adjacent to given location		-RAK-	*/
-int summon_undead(y, x)
-int *y, *x;
+int summon_undead(int *y, int *x)
 {
   register int i, j, k;
   int l, m, ctr, summon;
@@ -1074,8 +1013,7 @@ register int8u x;
 
 
 /* Boolean : is object enchanted	  -RAK- */
-int magik(chance)
-int chance;
+int magik(int chance)
 {
   if (randint(100) <= chance)
     return(TRUE);
@@ -1085,8 +1023,7 @@ int chance;
 
 
 /* Enchant a bonus based on degree desired -RAK- */
-int m_bonus(base, max_std, level)
-int base, max_std, level;
+int m_bonus(int base, int max_std, int level)
 {
   register int x, stand_dev, tmp;
 
