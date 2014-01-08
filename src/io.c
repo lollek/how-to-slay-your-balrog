@@ -7,169 +7,33 @@
    included in all such copies. */
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <ctype.h>
+
 #ifndef STDIO_LOADED
 #define STDIO_LOADED
 #endif
 
 #include "config.h"
-
-#if defined(atarist) && defined(__GNUC__)
-#include <osbind.h>
-#endif
-
-#ifdef MSDOS
-#include <process.h>
-#endif
-
-#ifdef AMIGA
-/* detach from cli process */
-long _stack = 30000;
-long _priority = 0;
-long _BackGroundIO = 1;
-char *_procname = "Moria";
-#endif
-
-#if defined(NLS) && defined(lint)
-/* for AIX, don't let curses include the NL stuff */
-#undef NLS
-#endif
-
-#if !defined(GEMDOS)
-#ifdef MAC
-#ifdef THINK_C
-#include "ScrnMgr.h"
-#else
-#include <scrnmgr.h>
-#endif
-#else
-#include <curses.h>
-#endif
-#else	/* GEMDOS i.e. Atari ST */
-#include "curses.h"
-long wgetch();
-#ifdef ATARIST_TC
-#include <tos.h>	/* TC */
-#include <ext.h>
-#else
-#include <osbind.h>	/* MWC */
-#endif
-char *getenv();
-#endif
-
-/* These are included after curses.h to avoid redefintion warnings for
-   TRUE, FALSE, and NULL.  */
-
 #include "constant.h"
 #include "types.h"
 #include "externs.h"
 
-#include <ctype.h>
+#include <curses.h>
 
-#if defined(SYS_V) && defined(lint)
-/* for AIX, prevent hundreds of unnecessary lint errors, must define before
-   signal.h is included */
-#define _h_IEEETRAP
-typedef struct { int stuff; } fpvmach;
-#endif
+/* These are included after curses.h to avoid redefintion warnings for
+   TRUE, FALSE, and NULL.  */
 
-#if defined(MSDOS)
-#if defined(ANSI)
-#include "ms_ansi.h"
-#endif
-#else /* not msdos */
-#if !defined(ATARI_ST) && !defined(MAC) && !defined(AMIGA)
-#ifndef VMS
 #include <sys/ioctl.h>
-#endif
-#include <signal.h>
-#endif
-#endif
-
-#ifndef USG
-/* only needed for Berkeley UNIX */
-#include <sys/param.h>
-#include <sys/file.h>
-#include <sys/types.h>
-#endif
-
-#ifdef USG
-#ifndef ATARI_ST
-#include <string.h>
-#else
-#include "string.h"
-#endif
-#if 0
-/* Used to include termio.h here, but that caused problems on some systems,
-   as curses.h includes it also above.  */
-#if !defined(MAC) && !defined(MSDOS) && !defined(ATARI_ST)
-#if !defined(AMIGA) && !defined(VMS)
 #include <termio.h>
-#endif
-#endif
-#endif
-#else /* ! USG */
-#include <strings.h>
-#if defined(atarist) && defined(__GNUC__)
-/* doesn't have sys/wait.h */
-#else
 #include <sys/wait.h>
-#endif
-#endif
 
-#ifdef ATARIST_TC
-/* Include this to get prototypes for standard library functions.  */
-#include <stdlib.h>
-#endif
-
-#if defined(SYS_V) && defined(lint)
-struct screen { int dumb; };
-#endif
-
-/* Fooling lint. Unfortunately, c defines all the TIO.	  -CJS-
-   constants to be long, and lint expects them to be int. Also,
-   ioctl is sometimes called with just two arguments. The
-   following definition keeps lint happy. It may need to be
-   reset for different systems.	 */
-#ifndef MAC
-#ifdef lint
-#ifdef Pyramid
-/* Pyramid makes constants greater than 65535 into long! Gakk! -CJS- */
-/*ARGSUSED*/
-/*VARARGS2*/
-static Ioctl(i, l, p) long l; char *p; { return 0; }
-#else
-/*ARGSUSED*/
-/*VARARGS2*/
-static Ioctl(i, l, p) char *p; { return 0; }
-#endif
-#define ioctl	    Ioctl
-#endif
-
-#if !defined(USG) && defined(lint)
-/* This use_value hack is for curses macros which return a value,
-   but don't shut up about it when you try to tell them (void).	 */
-/* only needed for Berkeley UNIX */
-int Use_value;
-#define use_value   Use_value +=
-#else
 #define use_value
-#endif
-
-#if defined(SYS_V) && defined(lint)
-/* This use_value2 hack is for curses macros which use a conditional
-   expression, and which say null effect even if you cast to (void). */
-/* only needed for SYS V */
-int Use_value2;
-#define use_value2  Use_value2 +=
-#else
 #define use_value2
-#endif
 
-#endif
-
-#ifndef MAC
 char *getenv();
-#endif
 
 #ifndef VMS
 #ifdef USG
@@ -182,11 +46,6 @@ unsigned sleep();
 #endif
 #endif
 #endif
-#endif
-
-#ifdef ultrix
-void exit();
-void sleep();
 #endif
 
 #if !defined(MAC) && !defined(MSDOS) && !defined(ATARI_ST) && !defined(VMS)
@@ -202,32 +61,15 @@ static int save_local_chars;
 #endif
 #endif
 
-#ifndef MAC
 static int curses_on = FALSE;
 static WINDOW *savescr;		/* Spare window for saving the screen. -CJS-*/
-#ifdef VMS
-static WINDOW *tempscr;		/* Spare window for VMS CTRL('R'). */
-#endif
-#endif
 
-#ifdef MAC
-/* Attributes of normal and hilighted characters */
-#define ATTR_NORMAL	attrNormal
-#define ATTR_HILITED	attrReversed
-#endif
-
-#ifndef MAC
-#ifdef SIGTSTP
 /* suspend()							   -CJS-
    Handle the stop and start signals. This ensures that the log
    is up to date, and that the terminal is fully reset and
    restored.  */
 int suspend()
 {
-#ifdef USG
-  /* for USG systems with BSDisms that have SIGTSTP defined, but don't
-     actually implement it */
-#else
   struct sgttyb tbuf;
   struct ltchars lcbuf;
   struct tchars cbuf;
@@ -238,25 +80,16 @@ int suspend()
   (void) ioctl(0, TIOCGETP, (char *)&tbuf);
   (void) ioctl(0, TIOCGETC, (char *)&cbuf);
   (void) ioctl(0, TIOCGLTC, (char *)&lcbuf);
-#if !defined(atarist) && !defined(__GNUC__)
-  (void) ioctl(0, TIOCLGET, (char *)&lbuf);
-#endif
   restore_term();
   (void) kill(0, SIGSTOP);
   curses_on = TRUE;
   (void) ioctl(0, TIOCSETP, (char *)&tbuf);
   (void) ioctl(0, TIOCSETC, (char *)&cbuf);
   (void) ioctl(0, TIOCSLTC, (char *)&lcbuf);
-#if !defined(atarist) && !defined(__GNUC__)
-  (void) ioctl(0, TIOCLSET, (char *)&lbuf);
-#endif
   (void) wrefresh(curscr);
   py.misc.male &= ~2;
-#endif
   return 0;
 }
-#endif
-#endif
 
 /* initializes curses routines */
 void init_curses()
@@ -443,9 +276,6 @@ void moriaterm()
 #endif
 #endif
 
-#ifdef ATARIST_TC
-  raw ();
-#endif
 }
 #endif
 
@@ -632,6 +462,12 @@ void shell_out()
   struct ltchars lcbuf;
   struct tchars cbuf;
   int lbuf;
+
+  /* To remove compiler complaints: TODO: Investigate. maybe remove */
+  (void)tbuf;
+  (void)lcbuf;
+  (void)cbuf;
+
 #endif
 #ifdef MSDOS
   char	*comspec, key;
@@ -713,7 +549,7 @@ void shell_out()
       /* it is not open on MSDOS machines */
       (void) fclose(highscore_fp);
 #endif
-      if (str = getenv("SHELL"))
+      if ((str = getenv("SHELL")))
 #ifndef ATARI_ST
 	(void) execl(str, str, (char *) 0);
 #else
@@ -780,86 +616,14 @@ void shell_out()
    operation can always be performed at any input prompt.  inkey() never
    returns ^R.	*/
 char inkey()
-#ifdef MAC
-/* The Mac does not need ^R, so it just consumes it */
-/* This routine does nothing special with direction keys */
-/* Just returns their keypad ascii value (e.g. '0'-'9') */
-/* Compare with inkeydir() below */
-{
-  char ch;
-  int dir;
-  int shift_flag, ctrl_flag;
-
-  put_qio();
-  command_count = 0;
-
-  do {
-    macgetkey(&ch, FALSE);
-  } while (ch == CTRL('R'));
-
-  dir = extractdir(ch, &shift_flag, &ctrl_flag);
-  if (dir != -1)
-    ch = '0' + dir;
-
-  return(ch);
-}
-#else
 {
   int i;
-#ifdef VMS
-  vtype tmp_str;
-#endif
 
   put_qio();			/* Dump IO buffer		*/
   command_count = 0;  /* Just to be safe -CJS- */
   while (TRUE)
     {
-#ifdef MSDOS
-      i = msdos_getch();
-#else
-#ifdef VMS
-      i = vms_getch ();
-#else
       i = getch();
-#if defined(atarist) && defined(__GNUC__)
-/* for some reason a keypad number produces an initial negative number. */
-      if (i<0) i = getch();
-#endif
-#endif
-#endif
-
-#ifdef VMS
-      if (i == 27) /* if ESCAPE key, then we probably have a keypad key */
-	{
-	  i = vms_getch();
-	  if (i == 'O') /* Now it is definitely a numeric keypad key */
-	    {
-	      i = vms_getch();
-	      switch (i)
-		{
-		  case 'p': i = '0'; break;
-		  case 'q' : i = '1'; break;
-		  case 'r' : i = '2'; break;
-		  case 's' : i = '3'; break;
-		  case 't' : i = '4'; break;
-		  case 'u' : i = '5'; break;
-		  case 'v' : i = '6'; break;
-		  case 'w' : i = '7'; break;
-		  case 'x' : i = '8'; break;
-		  case 'y' : i = '9'; break;
-		  case 'm' : i = '-'; break;
-		  case 'M' : i = 10; break; /* Enter = RETURN */
-		  case 'n' : i = '.'; break;
-		  default : while (kbhit()) (void) vms_getch();
-		  }
-	    }
-	  else
-	    {
-	      while (kbhit())
-		(void) vms_getch();
-	    }
-	}
-#endif /* VMS */
 
       /* some machines may not sign extend. */
       if (i == EOF)
@@ -889,92 +653,15 @@ char inkey()
 	}
       if (i != CTRL('R'))
 	return (char)i;
-#ifdef VMS
-      /* Refresh does not work right under VMS, so use a brute force. */
-      overwrite (stdscr, tempscr);
-      clear_screen();
-      put_qio();
-      overwrite (tempscr, stdscr);
-      touchwin (stdscr);
-      (void) wrefresh (stdscr);
-#endif
       (void) wrefresh (curscr);
       moriaterm();
     }
 }
-#endif
-
-
-#ifdef MAC
-char inkeydir()
-/* The Mac does not need ^R, so it just consumes it */
-/* This routine translates the direction keys in rogue-like mode */
-/* Compare with inkeydir() below */
-{
-  char ch;
-  int dir;
-  int shift_flag, ctrl_flag;
-  static char tab[9] = {
-	'b',		'j',		'n',
-	'h',		'.',		'l',
-	'y',		'k',		'u'
-  };
-  static char shifttab[9] = {
-	'B',		'J',		'N',
-	'H',		'.',		'L',
-	'Y',		'K',		'U'
-  };
-  static char ctrltab[9] = {
-	CTRL('B'),	CTRL('J'),	CTRL('N'),
-	CTRL('H'),	'.',		CTRL('L'),
-	CTRL('Y'),	CTRL('K'),	CTRL('U')
-  };
-
-  put_qio();
-  command_count = 0;
-
-  do {
-    macgetkey(&ch, FALSE);
-  } while (ch == CTRL('R'));
-
-  dir = extractdir(ch, &shift_flag, &ctrl_flag);
-
-  if (dir != -1) {
-    if (!rogue_like_commands) {
-      ch = '0' + dir;
-    }
-    else {
-      if (ctrl_flag)
-	ch = ctrltab[dir - 1];
-      else if (shift_flag)
-	ch = shifttab[dir - 1];
-      else
-	ch = tab[dir - 1];
-    }
-  }
-
-  return(ch);
-}
-#endif
 
 
 /* Flush the buffer					-RAK-	*/
 void flush()
-#ifdef MAC
 {
-/* Removed put_qio() call.  Reduces flashing.  Doesn't seem to hurt. */
-  FlushScreenKeys();
-}
-#else
-{
-#if defined(MSDOS)
-  while (kbhit())
-	(void) getch();
-#else
-#ifdef VMS
-  while (kbhit ())
-    (void) vms_getch();
-#else
   /* the code originally used ioctls, TIOCDRAIN, or TIOCGETP/TIOCSETP, or
      TCGETA/TCSETAF, however this occasionally resulted in loss of output,
      the happened especially often when rlogin from BSD to SYS_V machine,
@@ -982,88 +669,37 @@ void flush()
   /* wierd things happen on EOF, don't try to flush input in that case */
   if (!eof_flag)
     while (check_input(0));
-#endif
-#endif
 
   /* used to call put_qio() here to drain output, but it is not necessary */
 }
-#endif
 
 
 /* Clears given line of text				-RAK-	*/
 void erase_line(row, col)
 int row;
 int col;
-#ifdef MAC
-{
-  Rect line;
-
-  if (row == MSG_LINE && msg_flag)
-    msg_print(CNIL);
-
-  line.left = col;
-  line.top = row;
-  line.right = SCRN_COLS;
-  line.bottom = row + 1;
-  DEraseScreen(&line);
-}
-#else
 {
   if (row == MSG_LINE && msg_flag)
     msg_print(CNIL);
   (void) move(row, col);
   clrtoeol();
 }
-#endif
 
 
 /* Clears screen */
 void clear_screen()
-#ifdef MAC
-{
-  Rect area;
-
-  if (msg_flag)
-    msg_print(CNIL);
-
-  area.left = area.top = 0;
-  area.right = SCRN_COLS;
-  area.bottom = SCRN_ROWS;
-  DEraseScreen(&area);
-}
-#else
 {
   if (msg_flag)
     msg_print(CNIL);
-#ifdef VMS
-  /* Clear doesn't work right under VMS, so use brute force. */
-  (void) clearok (stdscr, TRUE);
-  (void) wclear(stdscr);
-  (void) clearok (stdscr, FALSE);
-#else
   (void) clear();
-#endif
 }
-#endif
 
 void clear_from (row)
 int row;
-#ifdef MAC
-{
-  Rect area;
-
-  area.left = 0;
-  area.top = row;
-  area.right = SCRN_COLS;
-  area.bottom = SCRN_ROWS;
-  DEraseScreen(&area);
-}
-#else
 {
   (void) move(row, 0);
   clrtobot();
 }
-#endif
 
 
 /* Outputs a char to a given interpolated y, x position	-RAK-	*/
@@ -1072,22 +708,6 @@ void print(ch, row, col)
 char ch;
 int row;
 int col;
-#ifdef MAC
-{
-  char cnow, anow;
-
-  row -= panel_row_prt;/* Real co-ords convert to screen positions */
-  col -= panel_col_prt;
-
-  GetScreenCharAttr(&cnow, &anow, col, row);	/* Check current */
-
-  /* If char is already set, ignore op */
-  if ((cnow != ch) || (anow != ATTR_NORMAL))
-    DSetScreenCharAttr(ch & 0x7F,
-		       (ch & 0x80) ? attrReversed : attrNormal,
-		       col, row);
-}
-#else
 {
   vtype tmp_str;
 
@@ -1106,21 +726,12 @@ int col;
       (void) sleep(2);
     }
 }
-#endif
 
 
 /* Moves the cursor to a given interpolated y, x position	-RAK-	*/
 void move_cursor_relative(row, col)
 int row;
 int col;
-#ifdef MAC
-{
-  row -= panel_row_prt;/* Real co-ords convert to screen positions */
-  col -= panel_col_prt;
-
-  DSetScreenCursor(col, row);
-}
-#else
 {
   vtype tmp_str;
 
@@ -1140,7 +751,6 @@ int col;
       (void) sleep(2);
     }
 }
-#endif
 
 
 /* Print a message so as not to interrupt a counted command. -CJS- */
@@ -1160,22 +770,6 @@ void prt(str_buff, row, col)
 char *str_buff;
 int row;
 int col;
-#ifdef MAC
-{
-  Rect line;
-
-  if (row == MSG_LINE && msg_flag)
-    msg_print(CNIL);
-
-  line.left = col;
-  line.top = row;
-  line.right = SCRN_COLS;
-  line.bottom = row + 1;
-  DEraseScreen(&line);
-
-  put_buffer(str_buff, row, col);
-}
-#else
 {
   if (row == MSG_LINE && msg_flag)
     msg_print(CNIL);
@@ -1183,21 +777,14 @@ int col;
   clrtoeol();
   put_buffer(str_buff, row, col);
 }
-#endif
 
 
 /* move cursor to a given y, x position */
 void move_cursor(row, col)
 int row, col;
-#ifdef MAC
-{
-  DSetScreenCursor(col, row);
-}
-#else
 {
   (void) move (row, col);
 }
-#endif
 
 
 /* Outputs message to top line of screen				*/
@@ -1208,9 +795,6 @@ char *str_buff;
   register int old_len, new_len;
   int combine_messages = FALSE;
   char in_char;
-#ifdef MAC
-  Rect line;
-#endif
 
   if (msg_flag)
     {
@@ -1247,16 +831,8 @@ char *str_buff;
 
   if (! combine_messages)
     {
-#ifdef MAC
-      line.left = 0;
-      line.top = MSG_LINE;
-      line.right = SCRN_COLS;
-      line.bottom = MSG_LINE+1;
-      DEraseScreen(&line);
-#else
       (void) move(MSG_LINE, 0);
       clrtoeol();
-#endif
     }
 
   /* Make the null string a special case.  -CJS- */
@@ -1294,34 +870,16 @@ int get_check(prompt)
 char *prompt;
 {
   int res;
-#ifdef MAC
-  long y, x;		/* ??? Should change to int or short.  */
-#else
   int y, x;
-#endif
 
   prt(prompt, 0, 0);
-#ifdef MAC
-  GetScreenCursor(&x, &y);
-#else
   getyx(stdscr, y, x);
-#if defined(lint)
-  /* prevent message 'warning: y is unused' */
-  x = y;
-#endif
-#ifdef LINT_ARGS
-  /* prevent message about y never used for MSDOS systems */
-  res = y;
-#endif
-#endif
+
+  (void)y; /* To remove compiler complaints */
 
   if (x > 73)
     (void) move(0, 73);
-#ifdef MAC
-  DWriteScreenStringAttr(" [y/n]", ATTR_NORMAL);
-#else
   (void) addstr(" [y/n]");
-#endif
   do
     {
       res = inkey();
@@ -1353,27 +911,6 @@ char *command;
   return(res);
 }
 
-#ifdef MAC
-/* Same as get_com(), but translates direction keys from keypad */
-int get_comdir(prompt, command)
-char *prompt;
-char *command;
-{
-  int res;
-
-  if (prompt)
-    prt(prompt, 0, 0);
-  *command = inkeydir();
-  if (*command == ESCAPE)
-    res = FALSE;
-  else
-    res = TRUE;
-  erase_line(MSG_LINE, 0);
-  return(res);
-}
-#endif
-
-
 /* Gets a string terminated by <RETURN>		*/
 /* Function returns false if <ESCAPE> is input	*/
 int get_string(in_str, row, column, slen)
@@ -1383,25 +920,13 @@ int row, column, slen;
   register int start_col, end_col, i;
   char *p;
   int flag, aborted;
-#ifdef MAC
-  Rect area;
-#endif
 
   aborted = FALSE;
   flag	= FALSE;
-#ifdef MAC
-  area.left = column;
-  area.top = row;
-  area.right = column + slen;
-  area.bottom = row + 1;
-  DEraseScreen(&area);
-  DSetScreenCursor(column, row);
-#else
   (void) move(row, column);
   for (i = slen; i > 0; i--)
     (void) addch(' ');
   (void) move(row, column);
-#endif
   start_col = column;
   end_col = column + slen - 1;
   if (end_col > 79)
@@ -1435,12 +960,7 @@ int row, column, slen;
 	    bell();
 	  else
 	    {
-#ifdef MAC
-	      DSetScreenCursor(column, row);
-	      DWriteScreenCharAttr((char) i, ATTR_NORMAL);
-#else
 	      use_value2 mvaddch(row, column, (char)i);
-#endif
 	      *p++ = i;
 	      column++;
 	    }
@@ -1482,34 +1002,12 @@ int delay;
   if (dummy == 'Q')
     {
       erase_line(prt_line, 0);
-#ifndef MSDOS		/* PCs are slow enough as is  -dgk */
       if (delay > 0)  (void) sleep((unsigned)delay);
-#else
-      /* prevent message about delay unused */
-      dummy = delay;
-#endif
-#ifdef MAC
-      enablefilemenu(FALSE);
       exit_game();
-      enablefilemenu(TRUE);
-#else
-      exit_game();
-#endif
     }
   erase_line(prt_line, 0);
 }
 
-#ifdef MAC
-void save_screen()
-{
-  mac_save_screen();
-}
-
-void restore_screen()
-{
-  mac_restore_screen();
-}
-#else
 void save_screen()
 {
   overwrite(stdscr, savescr);
@@ -1520,7 +1018,6 @@ void restore_screen()
   overwrite(savescr, stdscr);
   touchwin(stdscr);
 }
-#endif
 
 void bell()
 {
@@ -1530,11 +1027,7 @@ void bell()
   if (! sound_beep_flag)
     return;
 
-#ifdef MAC
-  mac_beep();
-#else
   (void) write(1, "\007", 1);
-#endif
 }
 
 /* definitions used by screen_map() */
@@ -1547,18 +1040,10 @@ void bell()
 #define VE 5
 
 /* character set to use */
-#ifdef MSDOS
-# ifdef ANSI
-#   define CH(x)	(ansi ? screen_border[0][x] : screen_border[1][x])
-# else
-#   define CH(x)	(screen_border[1][x])
-# endif
-#else
-#   define CH(x)	(screen_border[0][x])
-#endif
+#define CH(x)	(screen_border[0][x])
 
   /* Display highest priority object in the RATIO by RATIO area */
-#define	RATIO 3
+#define RATIO 3
 
 void screen_map()
 {
@@ -1571,43 +1056,24 @@ void screen_map()
   int8u tmp;
   int priority[256];
   int row, orow, col, myrow, mycol = 0;
-#ifndef MAC
   char prntscrnbuf[80];
-#endif
 
   for (i = 0; i < 256; i++)
     priority[i] = 0;
   priority['<'] = 5;
   priority['>'] = 5;
   priority['@'] = 10;
-#ifdef MSDOS
-  priority[wallsym] = -5;
-  priority[floorsym] = -10;
-#else
-#ifndef ATARI_ST
   priority['#'] = -5;
-#else
-  priority[(unsigned char)240] = -5;
-#endif
   priority['.'] = -10;
-#endif
   priority['\''] = -3;
   priority[' '] = -15;
 
   save_screen();
   clear_screen();
-#ifdef MAC
-  DSetScreenCursor(0, 0);
-  DWriteScreenCharAttr(CH(TL), ATTR_NORMAL);
-  for (i = 0; i < MAX_WIDTH / RATIO; i++)
-    DWriteScreenCharAttr(CH(HE), ATTR_NORMAL);
-  DWriteScreenCharAttr(CH(TR), ATTR_NORMAL);
-#else
   use_value2 mvaddch(0, 0, CH(TL));
   for (i = 0; i < MAX_WIDTH / RATIO; i++)
     (void) addch(CH(HE));
   (void) addch(CH(TR));
-#endif
   orow = -1;
   map[MAX_WIDTH / RATIO] = '\0';
   for (i = 0; i < MAX_HEIGHT; i++)
@@ -1617,18 +1083,11 @@ void screen_map()
 	{
 	  if (orow >= 0)
 	    {
-#ifdef MAC
-	      DSetScreenCursor(0, orow+1);
-	      DWriteScreenCharAttr(CH(VE), ATTR_NORMAL);
-	      DWriteScreenString((char *) map);
-	      DWriteScreenCharAttr(CH(VE), ATTR_NORMAL);
-#else
 	      /* can not use mvprintw() on ibmpc, because PC-Curses is horribly
 		 written, and mvprintw() causes the fp emulation library to be
 		 linked with PC-Moria, makes the program 10K bigger */
 	      (void) sprintf(prntscrnbuf,"%c%s%c",CH(VE), map, CH(VE));
 	      use_value2 mvaddstr(orow+1, 0, prntscrnbuf);
-#endif
 	    }
 	  for (j = 0; j < MAX_WIDTH / RATIO; j++)
 	    map[j] = ' ';
@@ -1649,39 +1108,17 @@ void screen_map()
     }
   if (orow >= 0)
     {
-#ifdef MAC
-      DSetScreenCursor(0, orow+1);
-      DWriteScreenCharAttr(CH(VE), ATTR_NORMAL);
-      DWriteScreenString((char *) map);
-      DWriteScreenCharAttr(CH(VE), ATTR_NORMAL);
-#else
       (void) sprintf(prntscrnbuf,"%c%s%c",CH(VE), map, CH(VE));
       use_value2 mvaddstr(orow+1, 0, prntscrnbuf);
-#endif
     }
-#ifdef MAC
-  DSetScreenCursor(0, orow + 2);
-  DWriteScreenCharAttr(CH(BL), ATTR_NORMAL);
-  for (i = 0; i < MAX_WIDTH / RATIO; i++)
-    DWriteScreenCharAttr(CH(HE), ATTR_NORMAL);
-  DWriteScreenCharAttr(CH(BR), ATTR_NORMAL);
-#else
   use_value2 mvaddch(orow + 2, 0, CH(BL));
   for (i = 0; i < MAX_WIDTH / RATIO; i++)
     (void) addch(CH(HE));
   (void) addch(CH(BR));
-#endif
 
-#ifdef MAC
-  DSetScreenCursor(23, 23);
-  DWriteScreenStringAttr("Hit any key to continue", ATTR_NORMAL);
-  if (mycol > 0)
-    DSetScreenCursor(mycol, myrow);
-#else
   use_value2 mvaddstr(23, 23, "Hit any key to continue");
   if (mycol > 0)
     (void) move(myrow, mycol);
-#endif
   (void) inkey();
   restore_screen();
 }
