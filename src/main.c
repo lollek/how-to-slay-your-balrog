@@ -54,98 +54,18 @@
 /*	 of the author Robert Alan Koeneke.				 */
 /*									 */
 
-#ifdef __TURBOC__
-#include	<io.h>
-#include	<stdio.h>
-#include	<stdlib.h>
-#endif /* __TURBOC__ */
- 
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
 #include "config.h"
 #include "constant.h"
 #include "types.h"
 #include "externs.h"
 
-#ifndef USG
-#include <sys/types.h>
-#include <sys/param.h>
-#endif
-
-#ifdef USG
-#ifndef ATARIST_MWC
-#include <string.h>
-#else
-#include "string.h"
-#endif
-#else
-#include <strings.h>
-#endif
-
-#include <ctype.h>
-
-#ifdef Pyramid
-#include <sys/time.h>
-#else
-#include <time.h>
-#endif
-
-#ifndef VMS
-#ifndef MAC
-#ifndef GEMDOS
-#ifndef AMIGA
 long time();
-#endif
-#endif
-char *getenv();
-#endif
-#endif
-
-#ifndef MAC
-#ifndef AMIGA
-#ifdef USG
-#if !defined(MSDOS) && !defined(ATARIST_TC)
-unsigned short getuid(), getgid();
-#endif
-#else
-#ifndef SECURE
-#ifdef BSD4_3
-uid_t getuid(), getgid();
-#else  /* other BSD versions */
-int getuid(), getgid();
-#endif
-#endif
-#endif
-#endif
-#endif
-
-#ifndef VMS
-#ifndef MAC
-#if defined(ultrix) || defined(USG)
-void perror();
-#endif
-#endif
-#endif
-
-#ifndef VMS
-#ifndef MAC
-#ifdef USG
-void exit();
-#endif
-#endif
-#endif
-
-/*
-#if defined(atarist) && defined(__GNUC__)
-long _stksize = 64*1024;
-#endif
-*/
-
-#ifdef ATARIST_MWC
-long _stksize = 18000;		/*(SAJ) for MWC	*/
-#endif
-
-#ifdef __TURBOC__
-unsigned _stklen = 0x3fff;	/* increase stack from 4K to 16K */
-#endif
 
 #if defined(LINT_ARGS)
 static void char_inven_init(void);
@@ -164,25 +84,12 @@ static void price_adjust();
 #endif
 
 /* Initialize, restore, and get the ball rolling.	-RAK-	*/
-#ifdef MAC
-/* This is just a subroutine for the Mac version */
-/* only options passed in are -orn */
-/* save file name is never passed */
-int moria_main(argc, argv)
-int argc;
-char *argv[];
-#else
-int main(argc, argv)
-int argc;
-char *argv[];
-#endif
+int main(int argc, char *argv[])
 {
   int32u seed;
   int generate;
   int result;
-#ifndef MAC
   char *p;
-#endif
   int new_game = FALSE;
   int force_rogue_like = FALSE;
   int force_keys_to;
@@ -192,10 +99,6 @@ char *argv[];
 
 #ifdef SECURE
   Authenticate();
-#endif
-
-#ifdef MSDOS
-  msdos_init();		/* find out where everything is */
 #endif
 
   /* call this routine to grab a file pointer to the highscore file */
@@ -224,12 +127,6 @@ char *argv[];
   /* use curses */
   init_curses();
 
-#ifdef VMS
-  /* Bizarre, but yes this really is needed to make moria work correctly
-     under VMS.  */
-  restore_screen ();
-#endif
-
   /* catch those nasty signals */
   /* must come after init_curses as some of the signal handlers use curses */
   init_signals();
@@ -253,7 +150,6 @@ char *argv[];
 	force_rogue_like = TRUE;
 	force_keys_to = TRUE;
 	break;
-#ifndef MAC
       case 'S': display_scores(TRUE); exit_game();
       case 's': display_scores(FALSE); exit_game();
       case 'W':
@@ -265,14 +161,11 @@ char *argv[];
 	break;
       default: (void) printf("Usage: moria [-norsw] [savefile]\n");
 	exit_game();
-#endif
       }
 
-#ifndef MAC
   /* Check operating hours			*/
   /* If not wizard  No_Control_Y	       */
   read_times();
-#endif
 
   /* Some necessary initializations		*/
   /* all made into constants or initialized in variables.c */
@@ -321,11 +214,7 @@ char *argv[];
    parameter "generate" to true, as it does not recover any cave details. */
 
   result = FALSE;
-#ifdef MAC
-  if ((new_game == FALSE) && get_char(&generate))
-#else
   if ((new_game == FALSE) && !access(savefile, 0) && get_char(&generate))
-#endif
     result = TRUE;
 
   /* enter wizard mode before showing the character display, but must wait
@@ -345,11 +234,7 @@ char *argv[];
   else
     {	  /* Create character	   */
       create_character();
-#ifdef MAC
-      birth_date = time ((time_t *)0);
-#else
       birth_date = time ((long *)0);
-#endif
       char_inven_init();
       py.flags.food = 7500;
       py.flags.food_digested = 2;
@@ -388,7 +273,6 @@ char *argv[];
     {
       dungeon();				  /* Dungeon logic */
 
-#ifndef MAC
       /* check for eof here, see inkey() in io.c */
       /* eof can occur if the process gets a HANGUP signal */
       if (eof_flag)
@@ -401,7 +285,6 @@ char *argv[];
 	  /* should not reach here, by if we do, this guarantees exit */
 	  death = TRUE;
 	}
-#endif
 
       if (!death) generate_cave();	       /* New level	*/
     }
@@ -452,11 +335,7 @@ static void init_m_level()
     m_level[c_list[i].level]++;
 
   for (i = 1; i <= MAX_MONS_LEVEL; i++)
-#ifdef AMIGA  /* fix a stupid MANX Aztec C 5.0 bug again */
-    m_level[i] = m_level[i] + m_level[i-1];
-#else
     m_level[i] += m_level[i-1];
-#endif
 }
 
 
@@ -471,11 +350,7 @@ static void init_t_level()
   for (i = 0; i < MAX_DUNGEON_OBJ; i++)
     t_level[object_list[i].level]++;
   for (i = 1; i <= MAX_OBJ_LEVEL; i++)
-#ifdef AMIGA  /* fix a stupid MANX Aztec C 5.0 bug again */
-    t_level[i] = t_level[i] + t_level[i-1];
-#else
     t_level[i] += t_level[i-1];
-#endif
 
   /* now produce an array with object indexes sorted by level, by using
      the info in t_level, this is an O(n) sort! */
