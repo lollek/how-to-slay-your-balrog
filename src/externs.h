@@ -741,9 +741,7 @@ int tilde(char *, char *);
 /* only declare this if stdio.h has been previously included, STDIO_LOADED
    is defined after stdio.h is included */
 #if defined(STDIO_LOADED)
-FILE *tfopen(char *, char *);
 #endif
-int topen(char *, int, int);
 #endif
 
 /* variable.c */
@@ -1246,9 +1244,7 @@ int tilde();
 /* only declare this if stdio.h has been previously included, STDIO_LOADED
    is defined after stdio.h is included  */
 #if defined(STDIO_LOADED)
-FILE *tfopen();
 #endif
-int topen();
 #endif
 
 /* variable.c */
@@ -1265,8 +1261,6 @@ void wizard_create();
 
 #ifdef unix
 /* call functions which expand tilde before calling open/fopen */
-#define open topen
-#define fopen tfopen
 #endif
 
 /* st-stuff.c for the atari ST */
