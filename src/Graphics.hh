@@ -1,6 +1,8 @@
 #ifndef __MORIA_GRAPHICS_HH__
 #define __MORIA_GRAPHICS_HH__
 
+#include <string>
+
 #include <curses.h>
 
 class Graphics
@@ -11,6 +13,8 @@ class Graphics
     void operator=(const Graphics&) = delete;
 
     ~Graphics();
+
+    int drawSplashScreen(std::string filename) const;
 
   private:
     WINDOW *stdscr;

@@ -1,5 +1,6 @@
 #include <clocale>
 #include <iostream>
+#include <fstream>
 
 #include "Graphics.hh"
 
@@ -42,4 +43,30 @@ Graphics::~Graphics()
   endwin();
 }
 
+int Graphics::drawSplashScreen(std::string filename) const
+{
+  ifstream file(filename);
+  if (!file)
+    return 1;
 
+  clear();
+
+  char buf[81];
+  int line_counter = 0;
+  int status = 0;
+
+  file.getline(buf, 81);
+  while (file && line_counter < 25)
+  {
+    /* Escape bad chars */
+    for (char c : buf)
+      if (c == '\0' || c == '\t')
+        c = ' ';
+    status += mvaddstr(line_counter++, 0, buf);
+    file.getline(buf, 81);
+  }
+  refresh();
+  getch();
+
+  return status;
+}

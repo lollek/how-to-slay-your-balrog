@@ -12,6 +12,7 @@ Game::Game() :
 {
   if (!this->canOpenScorefile())
     exit(1);
+  graphics.drawSplashScreen(this->splashfile);
 }
 
 Game::~Game() {}
