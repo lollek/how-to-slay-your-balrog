@@ -1,6 +1,7 @@
 #include <clocale>
 #include <iostream>
 #include <fstream>
+#include <cstring>
 
 #include "Graphics.hh"
 
@@ -65,6 +66,8 @@ int Graphics::drawSplashScreen(std::string filename) const
     status += mvaddstr(line_counter++, 0, buf);
     file.getline(buf, 81);
   }
+  strcpy(buf, "[Press any key to continue.]");
+  status += mvaddstr(24, 40 -strlen(buf)/2, buf);
   refresh();
   getch();
 

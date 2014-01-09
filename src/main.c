@@ -125,11 +125,11 @@ int main(int argc, char *argv[])
 	exit_game();
       }
 
-  /* TODO:HERE*/
-
   /* Check operating hours			*/
   /* If not wizard  No_Control_Y	       */
   read_times();
+
+  /* TODO:HERE */
 
   /* Some necessary initializations		*/
   /* all made into constants or initialized in variables.c */
