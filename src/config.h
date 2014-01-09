@@ -18,15 +18,15 @@
 #endif
 
 #define MORIA_SAV	"moria.save"
-#define MORIA_HOU	"/opt/share/moria/files/hours"
-#define MORIA_MOR	"/opt/share/moria/files/news"
-#define MORIA_TOP	"/opt/share/moria/files/scores"
-#define MORIA_HELP	"/opt/share/moria/files/roglcmds.hlp"
-#define MORIA_ORIG_HELP	"/opt/share/moria/files/origcmds.hlp"
-#define MORIA_WIZ_HELP	"/opt/share/moria/files/rwizcmds.hlp"
-#define MORIA_OWIZ_HELP	"/opt/share/moria/files/owizcmds.hlp"
-#define MORIA_WELCOME	"/opt/share/moria/files/welcome.hlp"
-#define MORIA_VER	"/opt/share/moria/files/version.hlp"
+#define MORIA_HOU	"../files/hours"
+#define MORIA_MOR	"../files/news"
+#define MORIA_TOP	"../files/scores"
+#define MORIA_HELP	"../files/roglcmds.hlp"
+#define MORIA_ORIG_HELP	"../files/origcmds.hlp"
+#define MORIA_WIZ_HELP	"../files/rwizcmds.hlp"
+#define MORIA_OWIZ_HELP	"../files/owizcmds.hlp"
+#define MORIA_WELCOME	"../files/welcome.hlp"
+#define MORIA_VER	"../files/version.hlp"
 
 /* Substitute strchr for index on USG versions of UNIX.  */
 #if defined(SYS_V) || defined(MSDOS) || defined(MAC) || defined(VMS)
