@@ -14,7 +14,6 @@
 
 #include <curses.h>
 #include <signal.h>
-#include <sgtty.h>
 
 #ifndef STDIO_LOADED
 #define STDIO_LOADED
@@ -32,10 +31,12 @@ char *getenv();
 
 void exit();
 
+#if 0
 static struct ltchars save_special_chars;
 static struct sgttyb save_ttyb;
 static struct tchars save_tchars;
 static int save_local_chars;
+#endif
 
 static int curses_on = FALSE;
 static WINDOW *savescr;		/* Spare window for saving the screen. -CJS-*/
@@ -43,10 +44,13 @@ static WINDOW *savescr;		/* Spare window for saving the screen. -CJS-*/
 /* initializes curses routines */
 void init_curses()
 {
+  /* TODO: Research this */
+#if 0
   (void) ioctl(0, TIOCGLTC, (char *)&save_special_chars);
-  gtty(0, &save_ttyb); /* (void) ioctl(0, TIOCGETP, (char *)&save_ttyb); */
+  (void) ioctl(0, TIOCGETP, (char *)&save_ttyb);
   (void) ioctl(0, TIOCGETC, (char *)&save_tchars);
   (void) ioctl(0, TIOCLGET, (char *)&save_local_chars);
+#endif
 
   if (initscr() == NULL)
     {
@@ -66,8 +70,11 @@ void init_curses()
 /* Set up the terminal into a suitable state for moria.	 -CJS- */
 void moriaterm()
 {
+  /* TODO: Research this: */
+#if 0
   struct ltchars lbuf;
   struct tchars buf;
+#endif
 
   curses_on = TRUE;
   use_value cbreak();
@@ -75,6 +82,9 @@ void moriaterm()
   /* can not use nonl(), because some curses do not handle it correctly */
   /* disable all of the special characters except the suspend char, interrupt
      char, and the control flow start/stop characters */
+
+  /* TODO: Research this */
+#if 0
   (void) ioctl(0, TIOCGLTC, (char *)&lbuf);
   lbuf.t_suspc = (char)26; /* control-Z */
   lbuf.t_dsuspc = (char)-1;
@@ -92,6 +102,7 @@ void moriaterm()
   buf.t_eofc = (char)-1;
   buf.t_brkc = (char)-1;
   (void) ioctl(0, TIOCSETC, (char *)&buf);
+#endif
 }
 
 
@@ -143,9 +154,12 @@ void restore_term()
   endwin();  /* exit curses */
   (void) fflush (stdout);
   /* restore the saved values of the special chars */
+  /* TODO: Research this: */
+#if 0
   (void) ioctl(0, TIOCSLTC, (char *)&save_special_chars);
-  stty(0, &save_ttyb); /* (void) ioctl(0, TIOCSETP, (char *)&save_ttyb); */
+  (void) ioctl(0, TIOCSETP, (char *)&save_ttyb);
   (void) ioctl(0, TIOCSETC, (char *)&save_tchars);
+#endif
   curses_on = FALSE;
 }
 
