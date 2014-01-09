@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
   char *p;
   int new_game = FALSE;
   int force_rogue_like = FALSE;
-  int force_keys_to;
+  int force_keys_to = FALSE;
 
   /* default command set defined in config.h file */
   rogue_like_commands = TRUE;
