@@ -585,11 +585,6 @@ static void kingly()
 /* Handles the gravestone end top-twenty routines	-RAK-	 */
 void exit_game ()
 {
-#ifdef MAC
-  /* Prevent strange things from happening */
-  enablefilemenu(FALSE);
-#endif
-
   /* What happens upon dying.				-RAK-	 */
   msg_print(CNIL);
   flush ();  /* flush all input */
@@ -602,11 +597,7 @@ void exit_game ()
       print_tomb();
     }
   if (character_generated && !character_saved)
-#ifdef MAC
-    (void) save_char (TRUE);		/* Save the memory at least. */
-#else
     (void) save_char ();		/* Save the memory at least. */
-#endif
   /* add score to scorefile if applicable */
   if (character_generated)
     {
@@ -619,12 +610,5 @@ void exit_game ()
     }
   erase_line (23, 0);
   restore_term ();
-#ifdef MAC
-  /* Undo what has been done */
-  enablefilemenu(TRUE);
-  /* Long jump back into the Mac wrapper, in lieu of exit () */
-  goback();
-#else
   exit (0);
-#endif
 }
