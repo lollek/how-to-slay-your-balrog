@@ -3,47 +3,52 @@
 # LIBDIR must be the same directory defined in config.h
 # OWNER is who you want the game to be chown to.
 # GROUP is who you want the game to be chgrp to.
-BINDIR = /opt/bin
-LIBDIR = /opt/share/moria
-OWNER = games
-GROUP = games
+#
+#BINDIR = /opt/bin
+#LIBDIR = /opt/share/moria
+#OWNER = games
+#GROUP = games
 
+# C compile
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -g 
+CFLAGS = -Wall -Wextra -pedantic -g
+
+# CXX compile
+CXX = g++
+CXXFLAGS = -Wall -Wextra -pedantic -Weffc++ -Werror --std=c++11 -g
+
+# Shared compile
 LFLAGS = -lcurses
 
 ifeq ($(mode),strict)
   CFLAGS += -Werror
 endif
 
-CSRC = main.c
-COBJS = main.o
+# C only files:
+CSRCS = main.c
+COBJS = $(addsuffix .o, $(basename $(CSRCS)))
 
+# C++ only files:
+CXXSRCS = Graphics.cc Game.cc Main.cc
+CXXOBJS = $(addsuffix .o, $(basename $(CXXSRCS)))
+
+# Shared files:
 SRCS = misc1.c misc2.c misc3.c misc4.c store1.c files.c io.c \
 	create.c desc.c generate.c sets.c dungeon.c creature.c death.c \
 	eat.c help.c magic.c potions.c prayer.c save.c staffs.c wands.c \
 	scrolls.c spells.c wizard.c store2.c moria1.c moria2.c \
 	moria3.c moria4.c monsters.c treasure.c variable.c rnd.c recall.c \
 	unix.c player.c tables.c
+OBJS = $(addsuffix .o, $(basename $(SRCS)))
 
-OBJS = misc1.o misc2.o misc3.o misc4.o store1.o files.o io.o \
-	create.o desc.o generate.o sets.o dungeon.o creature.o death.o \
-	eat.o help.o magic.o potions.o prayer.o save.o staffs.o wands.o \
-	scrolls.o spells.o wizard.o store2.o moria1.o moria2.o \
-	moria3.o moria4.o monsters.o treasure.o variable.o rnd.o recall.o \
-	unix.o player.o tables.o
-
-LIBFILES = hours news origcmds.hlp owizcmds.hlp roglcmds.hlp rwizcmds.hlp \
-	version.hlp welcome.hlp
+#LIBFILES = hours news origcmds.hlp owizcmds.hlp roglcmds.hlp rwizcmds.hlp \
+#	version.hlp welcome.hlp
 
 moria : $(OBJS) $(COBJS)
 	$(CC) $^ $(LFLAGS) -o moria
 
-cxxhack: $(OBJS)
-	g++ -Wall -Wextra -pedantic -Werror -Weffc++ --std=c++11 -c -o Graphics.o Graphics.cc
-	g++ -Wall -Wextra -pedantic -Werror -Weffc++ --std=c++11 -c -o Game.o Game.cc
-	g++ -Wall -Wextra -pedantic -Werror -Weffc++ --std=c++11 -c -o Main.o Main.cc
-	g++ $^ Graphics.o Game.o Main.o $(LFLAGS) -o moria
+cxxhack: $(OBJS) $(CXXOBJS)
+	$(CXX) $^ $(LFLAGS) -o moria
 
 # you must define BINDIR and LIBDIR before installing
 # assumes that BINDIR and LIBDIR exist
@@ -66,6 +71,15 @@ clean:
 	$(RM) *.o
 	$(RM) moria
 
+# C only
+main.o: constant.h types.h externs.h config.h
+
+#C++ only
+Graphics.o: Graphics.hh
+Game.o: Game.hh Graphics.hh
+Main.o: Game.hh
+
+# Shared
 create.o: constant.h types.h externs.h config.h
 creature.o: constant.h types.h externs.h config.h
 death.o: constant.h types.h externs.h config.h
@@ -77,7 +91,6 @@ generate.o: constant.h types.h externs.h config.h
 help.o: constant.h types.h externs.h config.h
 io.o: constant.h types.h externs.h config.h
 magic.o: constant.h types.h externs.h config.h
-main.o: constant.h types.h externs.h config.h
 misc1.o: constant.h types.h externs.h config.h
 misc2.o: constant.h types.h externs.h config.h
 misc3.o: constant.h types.h externs.h config.h
