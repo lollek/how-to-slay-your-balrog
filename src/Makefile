@@ -9,8 +9,12 @@ OWNER = games
 GROUP = games
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -pedantic -g
 LFLAGS = -lcurses
+
+ifneq ($(mode),pleasecompile)
+  CFLAGS += -Werror
+endif
 #-ltermcap
 
 SRCS = main.c misc1.c misc2.c misc3.c misc4.c store1.c files.c io.c \
