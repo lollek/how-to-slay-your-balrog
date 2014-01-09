@@ -43,6 +43,7 @@ static WINDOW *savescr;		/* Spare window for saving the screen. -CJS-*/
 
 /* initializes curses routines */
 void init_curses()
+/* This fun has been moved to C++ (Graphics::Graphics) */
 {
   /* TODO: Research this */
 #if 0
@@ -69,6 +70,7 @@ void init_curses()
 
 /* Set up the terminal into a suitable state for moria.	 -CJS- */
 void moriaterm()
+/* Fun moved to C++ (Graphics::Graphics) */
 {
   /* TODO: Research this: */
 #if 0
@@ -144,6 +146,7 @@ void put_qio()
 
 /* Put the terminal in the original mode.			   -CJS- */
 void restore_term()
+/* This has been moved to C++ (Graphics::~Graphics()) */
 {
 
   if (!curses_on)

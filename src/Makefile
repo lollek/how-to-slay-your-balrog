@@ -8,22 +8,25 @@ LIBDIR = /opt/share/moria
 OWNER = games
 GROUP = games
 
-CC = cc
-CFLAGS = -Wall -Wextra -pedantic -g -O
+CC = gcc
+CFLAGS = -Wall -Wextra -pedantic -g 
 LFLAGS = -lcurses
 
 ifeq ($(mode),strict)
   CFLAGS += -Werror
 endif
 
-SRCS = main.c misc1.c misc2.c misc3.c misc4.c store1.c files.c io.c \
+CSRC = main.c
+COBJS = main.o
+
+SRCS = misc1.c misc2.c misc3.c misc4.c store1.c files.c io.c \
 	create.c desc.c generate.c sets.c dungeon.c creature.c death.c \
 	eat.c help.c magic.c potions.c prayer.c save.c staffs.c wands.c \
 	scrolls.c spells.c wizard.c store2.c moria1.c moria2.c \
 	moria3.c moria4.c monsters.c treasure.c variable.c rnd.c recall.c \
 	unix.c player.c tables.c
 
-OBJS = main.o misc1.o misc2.o misc3.o misc4.o store1.o files.o io.o \
+OBJS = misc1.o misc2.o misc3.o misc4.o store1.o files.o io.o \
 	create.o desc.o generate.o sets.o dungeon.o creature.o death.o \
 	eat.o help.o magic.o potions.o prayer.o save.o staffs.o wands.o \
 	scrolls.o spells.o wizard.o store2.o moria1.o moria2.o \
@@ -33,23 +36,29 @@ OBJS = main.o misc1.o misc2.o misc3.o misc4.o store1.o files.o io.o \
 LIBFILES = hours news origcmds.hlp owizcmds.hlp roglcmds.hlp rwizcmds.hlp \
 	version.hlp welcome.hlp
 
-moria : $(OBJS)
+moria : $(OBJS) $(COBJS)
 	$(CC) $^ $(LFLAGS) -o moria
+
+cxxhack: $(OBJS)
+	g++ -Wall -Wextra -pedantic -Werror -Weffc++ --std=c++11 -c -o Graphics.o Graphics.cc
+	g++ -Wall -Wextra -pedantic -Werror -Weffc++ --std=c++11 -c -o Game.o Game.cc
+	g++ -Wall -Wextra -pedantic -Werror -Weffc++ --std=c++11 -c -o Main.o Main.cc
+	g++ $^ Graphics.o Game.o Main.o $(LFLAGS) -o moria
 
 # you must define BINDIR and LIBDIR before installing
 # assumes that BINDIR and LIBDIR exist
-install:
-	chmod 755 $(BINDIR)
-	cp moria $(BINDIR)
-	chmod 4711 $(BINDIR)/moria
-	chmod 711 $(LIBDIR)
-	(cd files; cp $(LIBFILES) $(LIBDIR))
-	(cd $(LIBDIR); chmod 444 $(LIBFILES))
-	(cd $(LIBDIR); touch scores; chmod 644 scores)
-	chown $(OWNER) $(BINDIR)/moria
-	chgrp $(GROUP) $(BINDIR)/moria
-	(cd $(LIBDIR); chown $(OWNER) $(LIBFILES) scores)
-	(cd $(LIBDIR); chgrp $(GROUP) $(LIBFILES) scores)
+# install:
+# 	chmod 755 $(BINDIR)
+# 	cp moria $(BINDIR)
+# 	chmod 4711 $(BINDIR)/moria
+# 	chmod 711 $(LIBDIR)
+# 	(cd files; cp $(LIBFILES) $(LIBDIR))
+# 	(cd $(LIBDIR); chmod 444 $(LIBFILES))
+# 	(cd $(LIBDIR); touch scores; chmod 644 scores)
+# 	chown $(OWNER) $(BINDIR)/moria
+# 	chgrp $(GROUP) $(BINDIR)/moria
+# 	(cd $(LIBDIR); chown $(OWNER) $(LIBFILES) scores)
+# 	(cd $(LIBDIR); chgrp $(GROUP) $(LIBFILES) scores)
 # If you are short on disk space, or aren't interested in debugging moria.
 #	strip $(BINDIR)/moria
 
