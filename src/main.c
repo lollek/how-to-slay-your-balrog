@@ -90,17 +90,6 @@ int main(int argc, char *argv[])
   /* and prepare things to relinquish setuid privileges */
   init_scorefile();
 
-  if (0 != setuid(getuid()))
-    {
-      perror("Can't set permissions correctly!  Setuid call failed.\n");
-      exit(0);
-    }
-  if (0 != setgid(getgid()))
-    {
-      perror("Can't set permissions correctly!  Setgid call failed.\n");
-      exit(0);
-    }
-
   /* use curses */
   init_curses();
 
@@ -135,6 +124,8 @@ int main(int argc, char *argv[])
       default: (void) printf("Usage: moria [-norsw] [savefile]\n");
 	exit_game();
       }
+
+  /* TODO:HERE*/
 
   /* Check operating hours			*/
   /* If not wizard  No_Control_Y	       */
