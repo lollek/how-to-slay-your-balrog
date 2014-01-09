@@ -12,6 +12,9 @@
 #include <unistd.h>
 #include <ctype.h>
 
+#include <curses.h>
+#include <signal.h>
+
 #ifndef STDIO_LOADED
 #define STDIO_LOADED
 #endif
@@ -21,32 +24,21 @@
 #include "types.h"
 #include "externs.h"
 
-#include <curses.h>
-
-/* These are included after curses.h to avoid redefintion warnings for
-   TRUE, FALSE, and NULL.  */
-
+#if 0
 #include <sys/ioctl.h>
-#include <termio.h>
 #include <sys/wait.h>
+#include <sgtty.h>
+#include <termio.h>
+#include <termios.h>
+#include <sgtty.h>
+#endif
 
 #define use_value
 #define use_value2
 
 char *getenv();
 
-#ifndef VMS
-#ifdef USG
 void exit();
-#if defined(__TURBOC__)
-void sleep();
-#else
-#ifndef AMIGA
-unsigned sleep();
-#endif
-#endif
-#endif
-#endif
 
 #if !defined(MAC) && !defined(MSDOS) && !defined(ATARI_ST) && !defined(VMS)
 #ifndef AMIGA
