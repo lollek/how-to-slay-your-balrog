@@ -8,7 +8,7 @@
 class Game
 {
   public:
-    Game();
+    Game(unsigned seed);
     Game(const Game&) = delete;
 
     ~Game();
@@ -19,6 +19,9 @@ class Game
   private:
     const std::string scorefile = "../files/scores";
     const std::string splashfile = "../files/news";
+
+    const unsigned seed;
+
     Graphics graphics;
 
     /* Checks if we can read/write to scorefile */

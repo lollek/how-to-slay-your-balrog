@@ -18,6 +18,7 @@ struct tm *localtime();
 
 /* gets a new random seed for the random number generator */
 void init_seeds(int32u seed)
+  /* Moved to C++ (Game::Game) */
 {
   register int32u clock_var;
 

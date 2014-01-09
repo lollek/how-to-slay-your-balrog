@@ -129,8 +129,6 @@ int main(int argc, char *argv[])
   /* If not wizard  No_Control_Y	       */
   read_times();
 
-  /* TODO:HERE */
-
   /* Some necessary initializations		*/
   /* all made into constants or initialized in variables.c */
 
@@ -138,6 +136,8 @@ int main(int argc, char *argv[])
 
   /* Grab a random seed from the clock		*/
   init_seeds(seed);
+
+  /* TODO:HERE */
 
   /* Init monster and treasure levels for allocate */
   init_m_level();

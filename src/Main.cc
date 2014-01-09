@@ -1,4 +1,7 @@
 #include <iostream>
+#include <random>
+#include <chrono>
+#include <limits>
 
 #include <getopt.h>
 
@@ -8,7 +11,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-  int seed;
+  unsigned seed;
   int c;
 
   while ((c = getopt(argc, argv, "NnSsW:w:")) != -1)
@@ -37,6 +40,14 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-  Game game;
+  if (seed == 0)
+  {
+    default_random_engine 
+      gen(chrono::system_clock::now().time_since_epoch().count());
+    uniform_int_distribution<unsigned> dist(1, numeric_limits<unsigned>::max());
+    seed = dist(gen);
+  }
+
+  Game game(seed);
   return game.run();
 }

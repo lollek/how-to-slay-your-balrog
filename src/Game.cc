@@ -7,7 +7,8 @@
 
 using namespace std;
 
-Game::Game() :
+Game::Game(unsigned seed) :
+  seed(seed),
   graphics()
 {
   if (!this->canOpenScorefile())
