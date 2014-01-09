@@ -62,7 +62,7 @@ struct passwd *getpwnam();
 int check_input(microsec)
 int microsec;
 {
-#if defined(USG) && !defined(M_XENIX)
+#if 1
   int arg, result;
 #else
   struct timeval tbuf;
@@ -75,7 +75,7 @@ int microsec;
 #endif
 
   /* Return true if a read on descriptor 1 will not block. */
-#if !defined(USG) || defined(M_XENIX)
+#if 0
   tbuf.tv_sec = 0;
   tbuf.tv_usec = microsec;
 #if defined(BSD4_3) || defined(M_XENIX)
@@ -125,21 +125,11 @@ int microsec;
 void user_name(buf)
 char *buf;
 {
-  extern char *getlogin();
-  char pwline[256];
   register char *p;
 
   p = getlogin();
   if (p && p[0])
     (void) strcpy(buf, p);
-  else
-    {
-      (void) getpw((int)getuid(), pwline);
-      p = index(pwline, ':');
-      if (p)
-	*p = 0;
-      (void) strcpy(buf, pwline);
-    }
   if (!buf[0])
     (void) strcpy(buf, "X");	/* Gotta have some name */
 }
