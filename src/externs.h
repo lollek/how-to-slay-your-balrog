@@ -632,14 +632,6 @@ int magic_shop(int);
 int store_buy(int, int);
 #endif
 
-/* signals.c */
-void nosignals(void);
-void signals(void);
-void init_signals(void);
-void ignore_signals(void);
-void default_signals(void);
-void restore_signals(void);
-
 /* spells.c */
 void monster_name(char *, struct monster_type *, struct creature_type *);
 void lower_monster_name(char *, struct monster_type *,
@@ -1145,14 +1137,6 @@ int magic_shop();
 #ifdef MAC
 int store_buy();
 #endif
-
-/* signals.c */
-void nosignals();
-void signals();
-void init_signals();
-void ignore_signals();
-void default_signals();
-void restore_signals();
 
 /* spells.c */
 void monster_name();

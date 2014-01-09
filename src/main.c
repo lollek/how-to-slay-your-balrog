@@ -104,10 +104,6 @@ int main(int argc, char *argv[])
   /* use curses */
   init_curses();
 
-  /* catch those nasty signals */
-  /* must come after init_curses as some of the signal handlers use curses */
-  init_signals();
-
   seed = 0; /* let wizard specify rng seed */
   /* check for user interface option */
   for (--argc, ++argv; argc > 0 && argv[0][0] == '-'; --argc, ++argv)

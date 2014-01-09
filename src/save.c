@@ -406,7 +406,6 @@ char *fnam;
   if (character_saved)
     return TRUE;	/* Nothing to save. */
 
-  nosignals();
   put_qio();
   disturb (1, 0);		/* Turn off resting and searching. */
   change_speed(-pack_heavy);	/* Fix the speed */
@@ -456,7 +455,6 @@ char *fnam;
     {
       if (fd >= 0)
 	(void) unlink(fnam);
-      signals();
       if (fd >= 0)
 	(void) sprintf(temp, "Error writing to file %s", fnam);
       else
@@ -468,7 +466,6 @@ char *fnam;
     character_saved = 1;
 
   turn = -1;
-  signals();
 
   return TRUE;
 }
@@ -492,13 +489,11 @@ int *generate;
   int8u char_tmp, ychar, xchar, count;
   int8u version_maj, version_min, patch_level;
 
-  nosignals();
   *generate = TRUE;
   fd = -1;
 
   if (access(savefile, 0) != 0)
     {
-      signals();
       msg_print("Savefile does not exist.");
       return FALSE;	/* Don't bother with messages here. File absent. */
     }
@@ -977,8 +972,6 @@ int *generate;
 	  /* let the user overwrite the old savefile when save/quit */
 	  from_savefile = 1;
 
-	  signals();
-
 	  if (panic_save == 1)
 	    {
 	      (void) sprintf(temp, "This game is from a panic save.  \
@@ -1039,7 +1032,6 @@ scoreboard; it will not be scored again.");
     }
   turn = -1;
   prt("Please try again without that savefile.", 1, 0);
-  signals();
   exit_game();
 
   return FALSE;	/* not reached, unless on mac */
