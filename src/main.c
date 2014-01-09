@@ -67,21 +67,10 @@
 
 long time();
 
-#if defined(LINT_ARGS)
-static void char_inven_init(void);
-static void init_m_level(void);
-static void init_t_level(void);
-#if (COST_ADJ != 100)
-static void price_adjust(void);
-#endif
-#else
 static void char_inven_init();
 static void init_m_level();
 static void init_t_level();
-#if (COST_ADJ != 100)
 static void price_adjust();
-#endif
-#endif
 
 /* Initialize, restore, and get the ball rolling.	-RAK-	*/
 int main(int argc, char *argv[])
@@ -106,9 +95,6 @@ int main(int argc, char *argv[])
   init_scorefile();
 
 #ifndef SECURE
-#if !defined(MSDOS) && !defined(ATARIST_MWC) && !defined(MAC)
-#if !defined(AMIGA) && !defined(ATARIST_TC)
-#if !defined(atarist)
   if (0 != setuid(getuid()))
     {
       perror("Can't set permissions correctly!  Setuid call failed.\n");
@@ -119,9 +105,6 @@ int main(int argc, char *argv[])
       perror("Can't set permissions correctly!  Setgid call failed.\n");
       exit(0);
     }
-#endif
-#endif
-#endif
 #endif
 
   /* use curses */
@@ -170,9 +153,7 @@ int main(int argc, char *argv[])
   /* Some necessary initializations		*/
   /* all made into constants or initialized in variables.c */
 
-#if (COST_ADJ != 100)
   price_adjust();
-#endif
 
   /* Grab a random seed from the clock		*/
   init_seeds(seed);
@@ -184,29 +165,15 @@ int main(int argc, char *argv[])
   /* Init the store inventories			*/
   store_init();
 
-#ifndef MAC
-  /* On Mac, if -n is passed, no savefile is used */
-  /* If -n is not passed, the calling routine will know savefile name,
-     hence, this code is not necessary */
-
   /* Auto-restart of saved file */
   if (argv[0] != CNIL)
     (void) strcpy (savefile, argv[0]);
   else if ((p = getenv("MORIA_SAV")) != CNIL)
     (void) strcpy(savefile, p);
   else if ((p = getenv("HOME")) != CNIL)
-#if defined(ATARIST_MWC) || defined(ATARIST_TC)
-    (void) sprintf(savefile, "%s\\%s", p, MORIA_SAV);
-#else
-#ifdef VMS
-    (void) sprintf(savefile, "%s%s", p, MORIA_SAV);
-#else
     (void) sprintf(savefile, "%s/%s", p, MORIA_SAV);
-#endif
-#endif
   else
     (void) strcpy(savefile, MORIA_SAV);
-#endif
 
 /* This restoration of a saved character may get ONLY the monster memory. In
    this case, get_char returns false. It may also resurrect a dead character
@@ -366,7 +333,6 @@ static void init_t_level()
 }
 
 
-#if (COST_ADJ != 100)
 /* Adjust prices of objects				-RAK-	*/
 static void price_adjust()
 {
@@ -376,4 +342,3 @@ static void price_adjust()
   for (i = 0; i < MAX_OBJECTS; i++)
     object_list[i].cost = ((object_list[i].cost * COST_ADJ) + 50) / 100;
 }
-#endif
