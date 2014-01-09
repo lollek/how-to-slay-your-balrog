@@ -35,7 +35,7 @@ LIBFILES = hours news origcmds.hlp owizcmds.hlp roglcmds.hlp rwizcmds.hlp \
 	version.hlp welcome.hlp
 
 moria : $(OBJS)
-	$(CC) $^ $(LFLAGS)-o moria
+	$(CC) $^ $(LFLAGS) -o moria
 
 # you must define BINDIR and LIBDIR before installing
 # assumes that BINDIR and LIBDIR exist
