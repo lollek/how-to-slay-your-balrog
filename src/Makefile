@@ -9,10 +9,10 @@ OWNER = games
 GROUP = games
 
 CC = cc
-CFLAGS = -Wall -Wextra -pedantic -g
+CFLAGS = -Wall -Wextra -pedantic -g -O
 LFLAGS = -lcurses
 
-ifneq ($(mode),pleasecompile)
+ifeq ($(mode),strict)
   CFLAGS += -Werror
 endif
 
