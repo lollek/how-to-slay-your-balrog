@@ -7,7 +7,8 @@
 
 using namespace std;
 
-Game::Game(unsigned seed) :
+Game::Game(string savefile, unsigned seed) :
+  savefile(savefile),
   seed(seed),
   graphics()
 {
@@ -15,8 +16,6 @@ Game::Game(unsigned seed) :
     exit(1);
   graphics.drawSplashScreen(this->splashfile);
 }
-
-Game::~Game() {}
 
 int Game::run()
 {

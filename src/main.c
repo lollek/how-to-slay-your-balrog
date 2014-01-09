@@ -137,15 +137,14 @@ int main(int argc, char *argv[])
   /* Grab a random seed from the clock		*/
   init_seeds(seed);
 
-  /* TODO:HERE */
-
   /* Init monster and treasure levels for allocate */
-  init_m_level();
-  init_t_level();
+  init_m_level(); /* TODO: Not yet migrated */
+  init_t_level(); /* TODO: Not yet migrated */
 
   /* Init the store inventories			*/
-  store_init();
+  store_init();   /* TODO: Not yet migrated */
 
+  /* TODO: Migrated to C++ (Game::Game) but check rw access! */
   /* Auto-restart of saved file */
   if (argv[0] != CNIL)
     (void) strcpy (savefile, argv[0]);

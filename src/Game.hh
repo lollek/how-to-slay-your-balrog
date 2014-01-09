@@ -8,10 +8,8 @@
 class Game
 {
   public:
-    Game(unsigned seed);
+    Game(std::string savefile, unsigned seed);
     Game(const Game&) = delete;
-
-    ~Game();
 
     /* This works as a main() function for the game */
     int run();
@@ -20,6 +18,7 @@ class Game
     const std::string scorefile = "../files/scores";
     const std::string splashfile = "../files/news";
 
+    const std::string savefile;
     const unsigned seed;
 
     Graphics graphics;

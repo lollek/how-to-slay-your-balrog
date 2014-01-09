@@ -2,6 +2,8 @@
 #include <random>
 #include <chrono>
 #include <limits>
+#include <string>
+#include <cstdlib>
 
 #include <getopt.h>
 
@@ -11,9 +13,11 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+  string savefile;
   unsigned seed;
   int c;
 
+  /* Check commandline arguments */
   while ((c = getopt(argc, argv, "NnSsW:w:")) != -1)
     switch(c)
     {
@@ -40,6 +44,30 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+  /* Set savefile */
+  if (argc - optind == 1)
+    savefile = argv[optind];
+  else if (argc - optind == 0)
+  {
+    char *home_dir = getenv("HOME");
+    if (home_dir != NULL)
+    {
+      savefile = home_dir;
+      savefile += "/.moria_save";
+    }
+    else
+    {
+      cerr << "Failed to find your home directory. Try setting a manual path\n";
+      exit(1);
+    }
+  }
+  else
+  {
+    cerr << "Usage: moria [-nsw] [savefile]\n";
+    return 1;
+  }
+
+  /* Seed the game */
   if (seed == 0)
   {
     default_random_engine 
@@ -48,6 +76,6 @@ int main(int argc, char *argv[])
     seed = dist(gen);
   }
 
-  Game game(seed);
+  Game game(savefile, seed);
   return game.run();
 }
