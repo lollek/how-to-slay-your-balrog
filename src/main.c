@@ -84,17 +84,12 @@ int main(int argc, char *argv[])
   int force_keys_to;
 
   /* default command set defined in config.h file */
-  rogue_like_commands = ROGUE_LIKE;
-
-#ifdef SECURE
-  Authenticate();
-#endif
+  rogue_like_commands = TRUE;
 
   /* call this routine to grab a file pointer to the highscore file */
   /* and prepare things to relinquish setuid privileges */
   init_scorefile();
 
-#ifndef SECURE
   if (0 != setuid(getuid()))
     {
       perror("Can't set permissions correctly!  Setuid call failed.\n");
@@ -105,7 +100,6 @@ int main(int argc, char *argv[])
       perror("Can't set permissions correctly!  Setgid call failed.\n");
       exit(0);
     }
-#endif
 
   /* use curses */
   init_curses();
