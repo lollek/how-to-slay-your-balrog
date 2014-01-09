@@ -650,6 +650,12 @@ int dir, y, x;
   return(disarm);
 }
 
+/* This is just here for below. Doesn't do anything */
+int set_null(inven_type *item)
+{
+  (void)item;
+  return(FALSE);
+}
 
 /* Return flags for given type area affect		-RAK-	*/
 void get_flags(typ, weapon_type, harm_type, destroy)
