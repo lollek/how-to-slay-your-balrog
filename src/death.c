@@ -593,7 +593,6 @@ void exit_game ()
   /* What happens upon dying.				-RAK-	 */
   msg_print(CNIL);
   flush ();  /* flush all input */
-  nosignals ();	 /* Can't interrupt or suspend. */
   /* If the game has been saved, then save sets turn back to -1, which
      inhibits the printing of the tomb.	 */
   if (turn >= 0)
