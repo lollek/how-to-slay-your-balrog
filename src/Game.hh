@@ -4,6 +4,7 @@
 #include <string>
 
 #include "Graphics.hh"
+#include "Player.hh"
 
 class Game
 {
@@ -26,6 +27,7 @@ class Game
     const unsigned seed;
 
     Graphics *graphics;
+    Player *player;
 };
 
 #endif //__MORIA_GAME_HH__

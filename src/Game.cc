@@ -10,7 +10,8 @@ using namespace std;
 Game::Game(const string &savefile, unsigned seed) :
   savefile(savefile),
   seed(seed),
-  graphics(NULL)
+  graphics(NULL),
+  player(NULL)
 {
   this->graphics = new Graphics();
   graphics->drawSplashScreen(this->splashfile);

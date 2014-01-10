@@ -76,7 +76,7 @@ main.o: constant.h types.h externs.h config.h
 
 #C++ only
 Graphics.o: Graphics.hh
-Game.o: Game.hh Graphics.hh
+Game.o: Game.hh Graphics.hh Player.hh Tables.hh
 Main.o: Game.hh
 
 # Shared
