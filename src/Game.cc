@@ -47,13 +47,18 @@ int Game::createCharacter()
   status += graphics->print(2, 20, "Choose a race (? for Help): ");
   status += graphics->refresh();
 
-  string race;
-  while (race.length() != 1 || 'a' > race[0] || 
-         race[0] > ('a' + Tables::num_races -1))
-    graphics->getStringInput(race, 1);
+  int race = -1;
+  while (race == -1)
+  {
+    string race_str;
+    graphics->getStringInput(race_str, 1);
+    if (race_str.length() == 1 && 'a' <= race_str[0] && 
+        race_str[0] <= ('a' + Tables::num_races -1))
+      race = race_str[0] - 'a';
+  }
 
-  // Player race = race[0] - 'a'
-  // status += graphics->print(15, 3, player->raceToString());
+  status += graphics->print(15, 3, Tables::races[race].name);
+  graphics->refresh();
 
   return status;
 }
