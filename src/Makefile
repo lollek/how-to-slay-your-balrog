@@ -29,7 +29,7 @@ CSRCS = main.c
 COBJS = $(addsuffix .o, $(basename $(CSRCS)))
 
 # C++ only files:
-CXXSRCS = Graphics.cc Game.cc Main.cc
+CXXSRCS = Graphics.cc Game.cc Main.cc Player.cc
 CXXOBJS = $(addsuffix .o, $(basename $(CXXSRCS)))
 
 # Shared files:
@@ -76,6 +76,7 @@ main.o: constant.h types.h externs.h config.h
 
 #C++ only
 Graphics.o: Graphics.hh
+Player.o: Player.hh
 Game.o: Game.hh Graphics.hh Player.hh Tables.hh
 Main.o: Game.hh
 
