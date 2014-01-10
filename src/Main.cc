@@ -1,9 +1,8 @@
 #include <iostream>
-#include <random>
-#include <chrono>
 #include <limits>
 #include <string>
 #include <cstdlib>
+#include <ctime>
 
 #include <getopt.h>
 
@@ -68,13 +67,9 @@ int main(int argc, char *argv[])
   }
 
   /* Seed the game */
+  srand(time(NULL)); /* This is THE seed in this game. Don't move */
   if (seed == 0)
-  {
-    default_random_engine 
-      gen(chrono::system_clock::now().time_since_epoch().count());
-    uniform_int_distribution<unsigned> dist(1, numeric_limits<unsigned>::max());
-    seed = dist(gen);
-  }
+    seed = rand() % numeric_limits<unsigned>::max();
 
   Game game(savefile, seed);
   return game.run();
