@@ -6,12 +6,22 @@
 class Player
 {
   public:
-    Player();
+    //Player();
 
     Player(const Player&) = delete;
     void operator=(const Player&) = delete;
 
+    void modifyStr(int mod);
+    void modifyDex(int mod);
+    void modifyCon(int mod);
+    void modifyWis(int mod);
+    void modifyInt(int mod);
+    void modifyCha(int mod);
+
   private:
+
+    void modifyStat(int *stat, int mod);
+
     /* Old type: char[] */
     std::string name; /* Name of character */
 
@@ -67,6 +77,73 @@ class Player
 
     /* Old type char[4][60] */
     std::string history[4]; /* History record */
+
+    /* (this will probably cause a lot of headache)
+     *    Stats   Old Stats
+     * 0   STR       STR
+     * 1   DEX       INT
+     * 2   CON       WIS
+     * 3   WIS       DEX
+     * 4   INT       CON
+     * 5   CHA       CHA
+     */
+    /* Old type int8u[6] */
+    int max_stat[6];   /* What is restored */
+    int cur_stat[6];   /* What is natural */
+    int use_stat[6];   /* What is used */
+
+    /* Old type int16[6] */
+    int mod_stat[6];   /* What is modified */
+
+    /* Old type int32u */
+    unsigned flag_status; /* Status of player */
+
+    /* Old type int16 */
+    int flag_rest;               /* Rest counter>       */
+    int flag_blind;              /* Blindness counter   */
+    int flag_paralysis;          /* Paralysis counter   */
+    int flag_confused;           /* Confusion counter   */
+    int flag_food;               /* Food counter>       */
+    int flag_food_digested;      /* Food per round      */
+    int flag_protection;         /* Protection fr. evil */
+    int flag_speed;              /* Cur speed adjust    */
+    int flag_fast;               /* Temp speed change   */
+    int flag_slow;               /* Temp speed change   */
+    int flag_afraid;             /* Fear>>.......       */
+    int flag_poisoned;           /* Poisoned>....       */
+    int flag_image;              /* Hallucinate>.       */
+    int flag_protevil;           /* Protect VS evil     */
+    int flag_invuln;             /* Increases AC>       */
+    int flag_hero;               /* Heroism>.....       */
+    int flag_shero;              /* Super Heroism       */
+    int flag_blessed;            /* Blessed>.....       */
+    int flag_resist_heat;        /* Timed heat resist   */
+    int flag_resist_cold;        /* Timed cold resist   */
+    int flag_detect_inv;         /* Timed see invisible */
+    int flag_word_recall;        /* Timed teleport level*/
+    int flag_see_infra;          /* See warm creatures  */
+    int flag_tim_infra;          /* Timed infra vision  */
+
+    /* Old type int8u */
+    int flag_see_inv;            /* Can see invisible   */
+    int flag_teleport;           /* Random teleportation*/
+    int flag_free_act;           /* Never paralyzed     */
+    int flag_slow_digest;        /* Lower food needs    */
+    int flag_aggravate;          /* Aggravate monsters  */
+    int flag_fire_resist;        /* Resistance to fire  */
+    int flag_cold_resist;        /* Resistance to cold  */
+    int flag_acid_resist;        /* Resistance to acid  */
+    int flag_regenerate;         /* Regenerate hit pts  */
+    int flag_lght_resist;        /* Resistance to light */
+    int flag_ffall;              /* No damage falling   */
+    int flag_sustain_str;        /* Keep strength       */
+    int flag_sustain_int;        /* Keep intelligence   */
+    int flag_sustain_wis;        /* Keep wisdom>.       */
+    int flag_sustain_con;        /* Keep constitution   */
+    int flag_sustain_dex;        /* Keep dexterity      */
+    int flag_sustain_chr;        /* Keep charisma       */
+    int flag_confuse_monster;    /* Glowing hands.    */
+    int flag_new_spells;         /* Number of spells can learn. */
 };
 
 #endif //__MORIA_PLAYER_HH__
