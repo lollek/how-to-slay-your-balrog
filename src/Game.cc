@@ -10,11 +10,17 @@ using namespace std;
 Game::Game(string savefile, unsigned seed) :
   savefile(savefile),
   seed(seed),
-  graphics()
+  graphics(NULL)
 {
   if (!this->canOpenScorefile())
     exit(1);
-  graphics.drawSplashScreen(this->splashfile);
+  this->graphics = new Graphics();
+  graphics->drawSplashScreen(this->splashfile);
+}
+
+Game::~Game()
+{
+  delete this->graphics;
 }
 
 int Game::run()
@@ -24,7 +30,7 @@ int Game::run()
 
 bool Game::canOpenScorefile() const
 {
-  ifstream scorefile(this->scorefile);
+  ifstream scorefile(this->scorefile, ios::app);
   if (scorefile)
   {
     scorefile.close();

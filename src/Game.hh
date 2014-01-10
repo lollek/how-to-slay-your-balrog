@@ -10,6 +10,9 @@ class Game
   public:
     Game(std::string savefile, unsigned seed);
     Game(const Game&) = delete;
+    void operator=(const Game&) = delete;
+
+    ~Game();
 
     /* This works as a main() function for the game */
     int run();
@@ -21,7 +24,7 @@ class Game
     const std::string savefile;
     const unsigned seed;
 
-    Graphics graphics;
+    Graphics *graphics;
 
     /* Checks if we can read/write to scorefile */
     bool canOpenScorefile() const;
