@@ -14,7 +14,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   string savefile;
-  unsigned seed;
+  unsigned seed = 0;
   int c;
 
   /* Check commandline arguments */
