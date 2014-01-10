@@ -7,13 +7,15 @@
 
 using namespace std;
 
-Game::Game(string savefile, unsigned seed) :
+Game::Game(const string &savefile, unsigned seed) :
   savefile(savefile),
   seed(seed),
   graphics(NULL)
 {
-  if (!this->canOpenScorefile())
+  if (!this->canReadWriteFile(this->scorefile) ||
+      !this->canReadWriteFile(this->savefile))
     exit(1);
+
   this->graphics = new Graphics();
   graphics->drawSplashScreen(this->splashfile);
 }
@@ -28,19 +30,18 @@ int Game::run()
   return 0;
 }
 
-bool Game::canOpenScorefile() const
+bool Game::canReadWriteFile(const string &filename) const
 {
-  ifstream scorefile(this->scorefile, ios::app);
-  if (scorefile)
+  ifstream file(filename, ios::app);
+  if (file)
   {
-    scorefile.close();
+    file.close();
     return true;
   }
   else
   {
-    cerr 
-      << "Unable to open score file \"" << this->scorefile
-      << "\": " << strerror(errno) << '\n';
-    return 1;
+    cerr << "Unable to open \"" << filename
+         << "\": " << strerror(errno) << '\n';
+    return false;
   }
 }

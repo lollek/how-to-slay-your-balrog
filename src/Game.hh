@@ -8,7 +8,7 @@
 class Game
 {
   public:
-    Game(std::string savefile, unsigned seed);
+    Game(const std::string &savefile, unsigned seed);
     Game(const Game&) = delete;
     void operator=(const Game&) = delete;
 
@@ -20,14 +20,13 @@ class Game
   private:
     const std::string scorefile = "../files/scores";
     const std::string splashfile = "../files/news";
-
     const std::string savefile;
     const unsigned seed;
 
     Graphics *graphics;
 
     /* Checks if we can read/write to scorefile */
-    bool canOpenScorefile() const;
+    bool canReadWriteFile(const std::string &filename) const;
 };
 
 #endif //__MORIA_GAME_HH__
