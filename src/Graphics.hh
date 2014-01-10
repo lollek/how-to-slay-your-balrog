@@ -17,6 +17,7 @@ class Graphics
     int print(int x, int y, const std::string &filename) const;
     int clear() const;
     int refresh() const;
+    int clear_from(int line) const;
     void getStringInput(std::string &line, int max) const;
     int drawSplashScreen(const std::string &filename) const;
 

@@ -60,6 +60,12 @@ int Graphics::refresh() const
   return wrefresh(this->stdscr);
 }
 
+int Graphics::clear_from(int line) const
+{
+  move(line, 0);
+  return wclrtobot(this->stdscr);
+}
+
 void Graphics::getStringInput(string &line, int max) const
 {
   line.clear();
