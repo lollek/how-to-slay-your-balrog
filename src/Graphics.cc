@@ -78,18 +78,12 @@ void Graphics::getStringInput(string &line, int max) const
         ('a' <= c && c <= 'z') ||
         ('A' <= c && c <= 'Z') ||
         ('1' <= c && c <= '9') ))
-    {
       line[i++] = c;
-      move(orig_y, orig_x);
-      addstr(line.c_str());
-    }
     else if (c == KEY_BACKSPACE && i > 0)
-    {
       line[--i] = ' ';
-      move(orig_y, orig_x);
-      addstr(line.c_str());
-      move(orig_y, orig_x);
-    }
+
+    mvaddstr(orig_y, orig_x, line.c_str());
+    move(orig_y, orig_x + i);
   } while (c != KEY_ENTER && c != '\n');
 
   unsigned len = line.find_first_of(" ");

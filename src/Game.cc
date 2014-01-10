@@ -51,5 +51,8 @@ int Game::createCharacter()
          race[0] > ('a' + Tables::num_races -1))
     graphics->getStringInput(race, 1);
 
+  // Player race = race[0] - 'a'
+  // status += graphics->print(15, 3, player->raceToString());
+
   return status;
 }
