@@ -60,9 +60,9 @@ int Graphics::drawSplashScreen(std::string filename) const
   while (file && line_counter < 25)
   {
     /* Escape bad chars */
-    for (char c : buf)
-      if (c == '\t')
-        c = ' ';
+    for (unsigned i = 0; buf[i] != '\0'; ++i)
+      if (buf[i] == '\t')
+        buf[i] = ' ';
 
     status += mvaddstr(line_counter++, 0, buf);
     file.getline(buf, 81);
