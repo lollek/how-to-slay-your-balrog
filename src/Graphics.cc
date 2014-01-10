@@ -29,6 +29,7 @@ Graphics::Graphics() :
 
   noecho();
   cbreak();
+  keypad(stdscr, true);
   /* curs_set(0); // Cursor still exists in moria */
   /* start_color() //I want to add this
    *    init_pair(3, COLOR_YELLOW, COLOR_BLACK);
@@ -44,7 +45,61 @@ Graphics::~Graphics()
   endwin();
 }
 
-int Graphics::drawSplashScreen(std::string filename) const
+int Graphics::print(int x, int y, const string &filename) const
+{
+  return mvaddstr(y, x, filename.c_str());
+}
+
+int Graphics::clear() const
+{
+  return wclear(this->stdscr);
+}
+
+int Graphics::refresh() const
+{
+  return wrefresh(this->stdscr);
+}
+
+void Graphics::getStringInput(string &line, int max) const
+{
+  line.clear();
+  for (int i = 0; i < max; ++i)
+    line += ' ';
+
+  int orig_x, orig_y;
+  int i = 0;
+  int c;
+
+  getyx(this->stdscr, orig_y, orig_x);
+  do
+  {
+    c = wgetch(this->stdscr);
+    if (i < max && (
+        ('a' <= c && c <= 'z') ||
+        ('A' <= c && c <= 'Z') ||
+        ('1' <= c && c <= '9') ))
+    {
+      line[i++] = c;
+      move(orig_y, orig_x);
+      addstr(line.c_str());
+    }
+    else if (c == KEY_BACKSPACE && i > 0)
+    {
+      line[--i] = ' ';
+      move(orig_y, orig_x);
+      addstr(line.c_str());
+      move(orig_y, orig_x);
+    }
+  } while (c != KEY_ENTER && c != '\n');
+
+  unsigned len = line.find_first_of(" ");
+  if (len != string::npos)
+    line = line.substr(0, len);
+
+  move(orig_y, orig_x);
+}
+
+int Graphics::drawSplashScreen(const std::string &filename) const
 {
   ifstream file(filename);
   if (!file)

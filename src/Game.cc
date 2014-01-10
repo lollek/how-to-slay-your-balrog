@@ -1,9 +1,9 @@
 #include <cstring>
 
-#include <fstream>
 #include <iostream>
 
 #include "Game.hh"
+#include "Tables.hh"
 
 using namespace std;
 
@@ -12,12 +12,9 @@ Game::Game(const string &savefile, unsigned seed) :
   seed(seed),
   graphics(NULL)
 {
-  if (!this->canReadWriteFile(this->scorefile) ||
-      !this->canReadWriteFile(this->savefile))
-    exit(1);
-
   this->graphics = new Graphics();
   graphics->drawSplashScreen(this->splashfile);
+  this->createCharacter();
 }
 
 Game::~Game()
@@ -30,18 +27,29 @@ int Game::run()
   return 0;
 }
 
-bool Game::canReadWriteFile(const string &filename) const
+int Game::createCharacter()
 {
-  ifstream file(filename, ios::app);
-  if (file)
+  int status = 0;
+  status += graphics->clear();
+  status += graphics->print(1, 2, "Name        :");
+  status += graphics->print(1, 3, "Race        :");
+  status += graphics->print(1, 4, "Sex         :");
+  status += graphics->print(1, 5, "Class       :");
+  for (int i = 0; i < Tables::num_races; ++i)
   {
-    file.close();
-    return true;
+    const int x = 2 + (15 * (i % 5));
+    const int y = 21 + (i / 5);
+    string line = "a) " + Tables::races[i].name;
+    line[0] += i;
+    status += graphics->print(x, y, line);
   }
-  else
-  {
-    cerr << "Unable to open \"" << filename
-         << "\": " << strerror(errno) << '\n';
-    return false;
-  }
+  status += graphics->print(2, 20, "Choose a race (? for Help): ");
+  status += graphics->refresh();
+
+  string race;
+  while (race.length() != 1 || 'a' > race[0] || 
+         race[0] > ('a' + Tables::num_races -1))
+    graphics->getStringInput(race, 1);
+
+  return status;
 }

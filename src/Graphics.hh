@@ -14,7 +14,11 @@ class Graphics
 
     ~Graphics();
 
-    int drawSplashScreen(std::string filename) const;
+    int print(int x, int y, const std::string &filename) const;
+    int clear() const;
+    int refresh() const;
+    void getStringInput(std::string &line, int max) const;
+    int drawSplashScreen(const std::string &filename) const;
 
   private:
     WINDOW *stdscr;

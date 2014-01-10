@@ -18,15 +18,14 @@ class Game
     int run();
 
   private:
+    int createCharacter();
+
     const std::string scorefile = "../files/scores";
     const std::string splashfile = "../files/news";
     const std::string savefile;
     const unsigned seed;
 
     Graphics *graphics;
-
-    /* Checks if we can read/write to scorefile */
-    bool canReadWriteFile(const std::string &filename) const;
 };
 
 #endif //__MORIA_GAME_HH__
