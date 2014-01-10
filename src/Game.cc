@@ -30,12 +30,16 @@ int Game::run()
 
 int Game::createCharacter()
 {
+  /* Draw the background */
   int status = 0;
   status += graphics->clear();
   status += graphics->print(1, 2, "Name        :");
   status += graphics->print(1, 3, "Race        :");
   status += graphics->print(1, 4, "Sex         :");
   status += graphics->print(1, 5, "Class       :");
+
+
+  /* Ask for race */
   for (int i = 0; i < Tables::num_races; ++i)
   {
     const int x = 2 + (15 * (i % 5));
@@ -58,7 +62,25 @@ int Game::createCharacter()
   }
 
   status += graphics->print(15, 3, Tables::races[race].name);
-  graphics->refresh();
+  status += graphics->clear_from(20);
+
+  /* Ask for sex */
+  status += graphics->print(2, 21, "m) Male       f) Female");
+  status += graphics->print(2, 20, "Choose a sex (? for Help): ");
+  status += graphics->refresh();
+
+  int sex = -1;
+  while (sex == -1)
+  {
+    string sex_str;
+    graphics->getStringInput(sex_str, 1);
+    if (sex_str.length() == 1 && 
+        (sex_str[0] == 'm' || sex_str[0] == 'f'))
+      sex = sex_str[0] == 'm';
+  }
+
+  status += graphics->print(15, 4, sex ? "Male" : "Female");
+  status += graphics->refresh();
 
   return status;
 }
