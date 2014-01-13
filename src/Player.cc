@@ -1,8 +1,11 @@
 #include <cstdlib>
+#include <string>
 
 #include "Tables.hh"
 
 #include "Player.hh"
+
+using namespace std;
 
 Player::Player() :
   name("null"), gender(0), gold(0), max_exp(0), exp(0),
@@ -44,69 +47,44 @@ void Player::generate()
   for (int i = 0; i < 6; ++i)
     this->max_stat[i] = 5 + dice[3*i] + dice[3*i +1] + dice[3*i +2];
 
-  /* Apply racial modifier.. I think this should be modified a bit */
+  /* Apply racial modifier */
   switch(this->race)
   {
-    case 0: /* Human */ 
-      /* this->plus_to_hit = tohit_adj */
-      /* this->plus_to_dmg = todam_adj */
-      /* this->ac = toac_ adj */
-      break;
+    case 0: /* Human */ break;
 
     case 1: /* Half-Elf */
       this->modifyStr(-1); this->modifyDex(1); this->modifyCon(-1);
       this->modifyInt(1);  this->modifyCha(1);
-      /* this->plus_to_hit = tohit_adj */
-      /* this->plus_to_dmg = todam_adj */
-      /* this->ac = toac_adj */
       break;
 
     case 2: /* Elf */
       this->modifyStr(-1); this->modifyDex(1); this->modifyCon(-2);
       this->modifyWis(1);  this->modifyInt(2); this->modifyCha(1);
-      /* this->plus_to_hit = tohit_adj */
-      /* this->plus_to_dmg = todam_adj */
-      /* this->ac = toac_adj */
       break;
 
     case 3: /* Halfling */
       this->modifyStr(-2); this->modifyDex(3); this->modifyCon(1);
       this->modifyWis(1);  this->modifyInt(2); this->modifyCha(1);
-      /* this->plus_to_hit = tohit_adj */
-      /* this->plus_to_dmg = todam_adj */
-      /* this->ac = toac_adj */
       break;
 
     case 4: /* Gnome */
       this->modifyStr(-1); this->modifyDex(2); this->modifyCon(1);
       this->modifyInt(2);  this->modifyCha(-2);
-      /* this->plus_to_hit = tohit_adj */
-      /* this->plus_to_dmg = todam_adj */
-      /* this->ac = toac_adj */
       break;
 
     case 5: /* Dwarf */
       this->modifyStr(2); this->modifyDex(-2); this->modifyCon(2);
       this->modifyWis(1); this->modifyInt(-3); this->modifyCha(-3);
-      /* this->plus_to_hit = tohit_adj */
-      /* this->plus_to_dmg = todam_adj */
-      /* this->ac = toac_adj */
       break;
 
     case 6: /* Half-Orc */
       this->modifyStr(2);  this->modifyCon(1);
       this->modifyInt(-1); this->modifyCha(-4);
-      /* this->plus_to_hit = tohit_adj */
-      /* this->plus_to_dmg = todam_adj */
-      /* this->ac = toac_adj */
       break;
 
     case 7: /* Half-Troll */
       this->modifyStr(4);  this->modifyDex(-4); this->modifyCon(3);
       this->modifyWis(-2); this->modifyInt(-4); this->modifyCha(-6);
-      /* this->plus_to_hit = tohit_adj */
-      /* this->plus_to_dmg = todam_adj */
-      /* this->ac = toac_adj */
       break;
 
     default: break;
@@ -117,11 +95,62 @@ void Player::generate()
     this->cur_stat[i] = this->max_stat[i];
     /* TODO: set_use_stat[i] here */
 
+  /* Add background to player */
+  this->history = "";
+  this->social_class = rand() % 3 + 1;
+  int race_histmod = this->getRace()*3 +1;
+  int current = 0;
+  do
+  {
+    bool background_flag = false;
+    do
+    {
+      if (Tables::background[current].chart == race_histmod)
+      {
+        int test_roll = rand() % 100 + 1;
+        while (test_roll > Tables::background[current].roll)
+          ++current;
+        this->history += Tables::background[current].info;
+        this->social_class += Tables::background[current].bonux -50;
+        int prev = current;
+        if (race_histmod > Tables::background[current].next)
+          current = 0;
+        race_histmod = Tables::background[prev].next;
+        background_flag = true;
+      }
+      else
+        ++current;
+    } while (!background_flag);
+  } while (race_histmod != 0);
 
+  /* Set social class */
+  if (this->social_class > 100)
+    this->social_class = 100;
+  else if (this->social_class < 1)
+    this->social_class = 1;
+
+  /* Set age, width and height */
+  this->age = Tables::races[race].b_age + rand() % Tables::races[race].m_age;
+  if (this->gender)
+  {
+    Tables::race_data_t race_d = Tables::races[race];
+    this->height = race_d.m_b_ht + rand() % (race_d.m_m_ht - race_d.m_b_ht);
+    this->weight = race_d.m_b_wt + rand() % (race_d.m_m_wt - race_d.m_b_wt);
+  }
+  else
+  {
+    Tables::race_data_t race_d = Tables::races[race];
+    this->height = race_d.f_b_ht + rand() % (race_d.f_m_ht - race_d.f_b_ht);
+    this->weight = race_d.f_b_wt + rand() % (race_d.f_m_wt - race_d.f_b_wt);
+  }
 }
 
 int Player::getRace() const { return this->race; }
 bool Player::getSex() const { return this->gender; }
+int Player::getAge() const { return this->age; }
+int Player::getWeight() const { return this->weight; }
+int Player::getHeight() const { return this->height; }
+int Player::getSocialClass() const { return this->social_class; }
 int Player::getStr() const { return this->max_stat[0]; }
 int Player::getDex() const { return this->max_stat[1]; }
 int Player::getCon() const { return this->max_stat[2]; }
@@ -210,6 +239,10 @@ int Player::getPlusToAC() const
   else if (stat <  94) return( 3);
   else if (stat < 117) return( 4);
   else                 return( 5);
+}
+string Player::getBackground() const
+{
+  return this->history;
 }
 
 void Player::modifyStr(int mod) { this->modifyStat(&this->max_stat[0], mod); }

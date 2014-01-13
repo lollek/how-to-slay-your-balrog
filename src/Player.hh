@@ -21,6 +21,10 @@ class Player
     /* Getters */
     int getRace() const;
     bool getSex() const;
+    int getAge() const;
+    int getWeight() const;
+    int getHeight() const;
+    int getSocialClass() const;
     int getStr() const;
     int getDex() const;
     int getCon() const;
@@ -40,6 +44,7 @@ class Player
     int getPlusToHit() const;     /* Plusses to hit, old: ptohit */
     int getPlusToDmg() const;     /* Plusses to dmg, old: ptodam */
     int getPlusToAC() const;      /* Magic AC, old: ptoac */
+    std::string getBackground() const;
 
     /* Mods */
     void modifyStr(int mod);
@@ -99,7 +104,7 @@ class Player
     int current_hfrac; /* Current hp fraction, old: chp_frac */
 
     /* Old type char[4][60] */
-    std::string history[4]; /* History record */
+    std::string history; /* History record */
 
     /* (this will probably cause a lot of headache)
      *    Stats   Old Stats
