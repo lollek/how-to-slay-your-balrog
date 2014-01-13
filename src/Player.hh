@@ -6,17 +6,49 @@
 class Player
 {
   public:
-    //Player();
 
+    /* Create a clean character */
+    Player();
+
+    /* Generate stats for the player
+     * This function expects race and gender to be set */
+    void generate();
+
+    /* Forbid copying */
     Player(const Player&) = delete;
     void operator=(const Player&) = delete;
 
+    /* Getters */
+    int getRace() const;
+    bool getSex() const;
+    int getStr() const;
+    int getDex() const;
+    int getCon() const;
+    int getWis() const;
+    int getInt() const;
+    int getCha() const;
+    int getDisarm() const;        /* % to disarm */
+    int getSearchChance() const;  /* chance in search, old: srh */
+    int getSearchFreq() const;    /* Frenq of search, old: fos */
+    int getStealth() const;       /* Stealth factor, old: stl */
+    int getBaseToHit() const;     /* Base to hit, old: bth */
+    int getBowToHit() const;      /* Base to hit w/ bow, old: bthb */
+    int getSave() const;          /* Saving throw */
+    int getHitDie() const;        /* Hit die */
+    int getInfra() const;         /* See warm creatures  */
+    int getXPFactor() const;      /* Experience factor, old: expfact */
+
+    /* Mods */
     void modifyStr(int mod);
     void modifyDex(int mod);
     void modifyCon(int mod);
     void modifyWis(int mod);
     void modifyInt(int mod);
     void modifyCha(int mod);
+
+    /* Setters */
+    void setRace(int race);
+    void setSex(int sex);
 
   private:
 
@@ -42,10 +74,6 @@ class Player
     int max_dlevel;    /* max dungeon level explored, old: max_dlv */
 
     /* Old type: int16 */
-    int search_chance; /* chance in search, old: srh */
-    int search_freq;   /* Frenq of search, old: fos */
-    int base_to_hit;   /* Base to hit, old: bth */
-    int bow_to_hit;    /* Base to hit w/ bow, old: bthb */
     int mana;          /* Mana points */
     int max_hp;        /* Max hitpoints, old: mhp */
     int plus_to_hit;   /* Plusses to hit, old: ptohit */
@@ -56,16 +84,11 @@ class Player
     int visual_todmg;  /* Display ToDam, old: dis_td */
     int visual_ac;     /* Display AC, old: dis_ac */
     int visual_tac;    /* DIsplay ToTAC, old: dis_tac */
-    int disarm;        /* % to disarm */
-    int save;          /* Saving throw */
     int social_class;  /* Social class, old: sc */
-    int stealth;       /* Stealth factor, old: stl */
 
     /* Old type: int8u */
     int job;           /* Class, old: pclass */
     int race;          /* Race, old: prace */
-    int hitdie;        /* Hit die */
-    int xp_factor;     /* Experience factor, old: expfact */
 
     /* Old type: int16 */
     int current_mana;  /* Current mana points, old: cmana */
@@ -121,7 +144,6 @@ class Player
     int flag_resist_cold;        /* Timed cold resist   */
     int flag_detect_inv;         /* Timed see invisible */
     int flag_word_recall;        /* Timed teleport level*/
-    int flag_see_infra;          /* See warm creatures  */
     int flag_tim_infra;          /* Timed infra vision  */
 
     /* Old type int8u */
@@ -137,10 +159,10 @@ class Player
     int flag_lght_resist;        /* Resistance to light */
     int flag_ffall;              /* No damage falling   */
     int flag_sustain_str;        /* Keep strength       */
-    int flag_sustain_int;        /* Keep intelligence   */
-    int flag_sustain_wis;        /* Keep wisdom>.       */
-    int flag_sustain_con;        /* Keep constitution   */
     int flag_sustain_dex;        /* Keep dexterity      */
+    int flag_sustain_con;        /* Keep constitution   */
+    int flag_sustain_wis;        /* Keep wisdom>.       */
+    int flag_sustain_int;        /* Keep intelligence   */
     int flag_sustain_chr;        /* Keep charisma       */
     int flag_confuse_monster;    /* Glowing hands.    */
     int flag_new_spells;         /* Number of spells can learn. */
