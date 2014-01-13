@@ -14,6 +14,10 @@ class Graphics
 
     ~Graphics();
 
+    int bell() const;
+
+    int move_cursor(int x, int y) const;
+    int get_key() const;
     int print(int x, int y, const std::string &line) const;
     int println(int x, int y, const std::string &line) const;
     int clear() const;

@@ -45,6 +45,21 @@ Graphics::~Graphics()
   endwin();
 }
 
+int Graphics::bell() const
+{
+  return beep();
+}
+
+int Graphics::move_cursor(int x, int y) const
+{
+  return wmove(this->stdscr, y, x);
+}
+
+int Graphics::get_key() const
+{
+  return wgetch(this->stdscr);
+}
+
 int Graphics::print(int x, int y, const string &line) const
 {
   return mvaddstr(y, x, line.c_str());
