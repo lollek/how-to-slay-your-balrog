@@ -10,8 +10,7 @@ using namespace std;
 Player::Player() :
   name("null"), gender(0), gold(0), max_exp(0), exp(0),
   exp_frac(0), age(0), height(0), weight(0), level(1),
-  max_dlevel(0), mana(0), max_hp(0), ac(0), visual_tohit(0),
-  visual_todmg(0), visual_ac(0), visual_tac(0),
+  max_dlevel(0), mana(0), max_hp(0), ac(0),
   social_class(0), job(0), race(0), current_mana(0), current_hp(0),
   current_mfrac(0), current_hfrac(0), history(), max_stat(), cur_stat(),
   use_stat(), mod_stat(), flag_status(0), flag_rest(0),
@@ -182,6 +181,10 @@ string Player::getPlusToACString() const
 {
   return this->formatInt(this->getPlusToAC());
 }
+string Player::getACString() const
+{
+  return this->formatInt(this->getAC());
+}
 string Player::formatInt(int val) const
 {
   string return_string = "      ";
@@ -302,6 +305,10 @@ int Player::getPlusToAC() const
   else if (stat <  94) return( 3);
   else if (stat < 117) return( 4);
   else                 return( 5);
+}
+int Player::getAC() const
+{
+  return this->ac + this->getPlusToAC();
 }
 string Player::getBackground() const
 {

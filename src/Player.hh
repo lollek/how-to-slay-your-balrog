@@ -47,6 +47,7 @@ class Player
     int getPlusToHit() const;     /* Plusses to hit, old: ptohit */
     int getPlusToDmg() const;     /* Plusses to dmg, old: ptodam */
     int getPlusToAC() const;      /* Magic AC, old: ptoac */
+    int getAC() const;            /* AC + Magic AC, old: dis_ac */
     std::string getBackground() const; /* A 0-240 letter background info */
 
     /* Some of the above, in a %6d-string format */
@@ -64,6 +65,7 @@ class Player
     std::string getPlusToHitString() const;
     std::string getPlusToDmgString() const;
     std::string getPlusToACString() const;
+    std::string getACString() const;
 
     /* Mods */
     void modifyStr(int mod);
@@ -106,10 +108,6 @@ class Player
     int mana;          /* Mana points */
     int max_hp;        /* Max hitpoints, old: mhp */
     int ac;            /* Total AC, old: pac */
-    int visual_tohit;  /* Display ToHit, old: dis_th */
-    int visual_todmg;  /* Display ToDam, old: dis_td */
-    int visual_ac;     /* Display AC, old: dis_ac */
-    int visual_tac;    /* DIsplay ToTAC, old: dis_tac */
     int social_class;  /* Social class, old: sc */
 
     /* Old type: int8u */

@@ -126,7 +126,7 @@ int Game::createCharacter()
     graphics->print(1, 9, "+ To Hit    : " + player.getPlusToHitString());
     graphics->print(1,10, "+ To Damage : " + player.getPlusToDmgString());
     graphics->print(1,11, "+ To AC     : " + player.getPlusToACString());
-    graphics->print(1,12, "  Total AC  ");
+    graphics->print(1,12, "  Total AC  : " + player.getACString());
 
     string tmpstr;
     status += graphics->refresh();
