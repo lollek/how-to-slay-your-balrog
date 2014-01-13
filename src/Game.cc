@@ -86,23 +86,35 @@ int Game::createCharacter()
   }
 
   status += graphics->print(15, 4, player.getSex() ? "Male" : "Female");
-  status += graphics->clear_from(20);
 
   /* Generate stats */
   bool stats_generation_is_done = false;
   while (!stats_generation_is_done)
   {
+    status += graphics->clear_from(10);
     player.generate();
 
-    /* Print background */
+    /* Print history the pretty way */
     graphics->print(27, 14, "Character Background");
-    graphics->println(10, 15, player.getBackground());
+    string background_nfo = player.getBackground();
+    int y = 15;
+    unsigned start = 0;
+    unsigned stop = 0;
+    while ((stop = start + 59) < background_nfo.length())
+    {
+      while (background_nfo[stop] != ' ')
+        --stop;
+      graphics->println(10, y++, background_nfo.substr(start, stop-start));
+      start = stop +1;
+    }
+    graphics->println(10, y++, background_nfo.substr(start));
 
     /* Print the stats */
-    graphics->print(38, 2, "Age          :" + to_string(player.getAge()));
-    graphics->print(38, 3, "Height       :" + to_string(player.getHeight()));
-    graphics->print(38, 4, "Weight       :" + to_string(player.getWeight()));
-    graphics->print(38, 5, "Social Class :" + to_string(player.getSocialClass()));
+    graphics->println(38, 2, "Age          :" + to_string(player.getAge()));
+    graphics->println(38, 3, "Height       :" + to_string(player.getHeight()));
+    graphics->println(38, 4, "Weight       :" + to_string(player.getWeight()));
+    graphics->println(38, 5, "Social Class :" + 
+                      to_string(player.getSocialClass()));
 
     // Only put_stats left!?
 
