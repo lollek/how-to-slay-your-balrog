@@ -110,13 +110,18 @@ int Game::createCharacter()
     graphics->println(10, y++, background_nfo.substr(start));
 
     /* Print the stats */
-    graphics->println(38, 2, "Age          :" + to_string(player.getAge()));
-    graphics->println(38, 3, "Height       :" + to_string(player.getHeight()));
-    graphics->println(38, 4, "Weight       :" + to_string(player.getWeight()));
-    graphics->println(38, 5, "Social Class :" + 
-                      to_string(player.getSocialClass()));
+    graphics->println(38, 2, "Age          : " + player.getAgeString());
+    graphics->println(38, 3, "Height       : " + player.getHeightString());
+    graphics->println(38, 4, "Weight       : " + player.getWeightString());
+    graphics->println(38, 5, "Social Class : " + player.getSocialClassString());
 
-    // Only put_stats left!?
+    /* Print stats */
+    graphics->print(61, 2, "STR :" + player.getStrString());
+    graphics->print(61, 3, "DEX :" + player.getDexString());
+    graphics->print(61, 4, "CON :" + player.getConString());
+    graphics->print(61, 5, "WIS :" + player.getWisString());
+    graphics->print(61, 6, "INT :" + player.getIntString());
+    graphics->print(61, 7, "CHA :" + player.getChaString());
 
     string tmpstr;
     status += graphics->refresh();

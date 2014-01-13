@@ -19,18 +19,32 @@ class Player
     void operator=(const Player&) = delete;
 
     /* Getters */
-    int getRace() const;
-    bool getSex() const;
+    int getRace() const;         /* race as number, see Tables.hh */
+    bool getSex() const;         /* true if male */
     int getAge() const;
     int getWeight() const;
     int getHeight() const;
-    int getSocialClass() const;
-    int getStr() const;
+    int getSocialClass() const;  /* Class, 0 - 100 */
+
+    int getStr() const;          /* Get stat (raw form) */
     int getDex() const;
     int getCon() const;
     int getWis() const;
     int getInt() const;
     int getCha() const;
+
+    std::string getAgeString() const;
+    std::string getWeightString() const;
+    std::string getHeightString() const;
+    std::string getSocialClassString() const;
+
+    std::string getStrString() const; /* Get stat in written form */
+    std::string getDexString() const;
+    std::string getConString() const;
+    std::string getWisString() const;
+    std::string getIntString() const;
+    std::string getChaString() const;
+
     int getDisarm() const;        /* % to disarm */
     int getSearchChance() const;  /* chance in search, old: srh */
     int getSearchFreq() const;    /* Frenq of search, old: fos */
@@ -44,7 +58,7 @@ class Player
     int getPlusToHit() const;     /* Plusses to hit, old: ptohit */
     int getPlusToDmg() const;     /* Plusses to dmg, old: ptodam */
     int getPlusToAC() const;      /* Magic AC, old: ptoac */
-    std::string getBackground() const;
+    std::string getBackground() const; /* A 0-240 letter background info */
 
     /* Mods */
     void modifyStr(int mod);
@@ -60,6 +74,8 @@ class Player
 
   private:
 
+    std::string formatInt(int val) const;
+    std::string getStatString(int stat) const;
     void modifyStat(int *stat, int mod);
 
     /* Old type: char[] */

@@ -157,6 +157,57 @@ int Player::getCon() const { return this->max_stat[2]; }
 int Player::getWis() const { return this->max_stat[3]; }
 int Player::getInt() const { return this->max_stat[4]; }
 int Player::getCha() const { return this->max_stat[5]; }
+string Player::getAgeString() const { return this->formatInt(this->getAge()); }
+string Player::getWeightString() const 
+{
+  return this->formatInt(this->getWeight());
+}
+string Player::getHeightString() const 
+{
+  return this->formatInt(this->getHeight());
+}
+string Player::getSocialClassString() const 
+{
+  return this->formatInt(this->getSocialClass());
+}
+string Player::formatInt(int val) const
+{
+  string return_string = "      ";
+  int i = return_string.length();
+  do
+  {
+    return_string[--i] = '0' + val % 10;
+    val /= 10;
+  } while (val != 0 && i > 0);
+  return return_string;
+}
+string Player::getStrString() const { return this->getStatString(0); }
+string Player::getDexString() const { return this->getStatString(1); }
+string Player::getConString() const { return this->getStatString(2); }
+string Player::getWisString() const { return this->getStatString(3); }
+string Player::getIntString() const { return this->getStatString(4); }
+string Player::getChaString() const { return this->getStatString(5); }
+string Player::getStatString(int stat) const
+{
+  string return_string;
+  int value = this->max_stat[stat];
+  if (value < 18)
+  {
+    return_string = "      ";
+    return_string[5] = '0' + value % 10;
+    if (value >= 10)
+      return_string[4] = '1';
+  }
+  else if (value == 118)
+    return_string = "18/100";
+  else
+  {
+    return_string = " 18/  ";
+    return_string[5] = '0' + (value -18) % 10;
+    return_string[4] = '0' + (value -18) / 10;
+  }
+  return return_string;
+}
 int Player::getDisarm() const
 {
   const int stat = this->getDex();
