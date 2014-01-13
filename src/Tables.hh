@@ -17,6 +17,7 @@ namespace Tables
     int dex_adj;
     int con_adj;
     int chr_adj;
+
     int b_age;       /* Base age of character    (old: in8u) */
     int m_age;       /* Maximum age of character (old: in8u) */
     int m_b_ht;      /* base height for males    (old: in8u)  */
@@ -27,6 +28,7 @@ namespace Tables
     int f_m_ht;      /* mod height for females   (old: in8u) */
     int f_b_wt;      /* base weight for female   (old: in8u) */
     int f_m_wt;      /* mod weight for females   (old: in8u) */
+
     int b_dis;       /* base chance to disarm      (old: int16) */
     int srh;         /* base chance for search     (old: int16) */
     int stl;         /* Stealth of character       (old: int16) */
