@@ -97,9 +97,6 @@ register int factor;
 void calc_bonuses()
 {
   register int32u item_flags;
-#if defined(ATARIST_MWC)
-  int32u holder;		/* to avoid a compiler bug */
-#endif
   int old_dis_ac;
   register struct flags *p_ptr;
   register struct misc *m_ptr;
@@ -185,11 +182,7 @@ void calc_bonuses()
 
   /* can't print AC here because might be in a store */
   if (old_dis_ac != m_ptr->dis_ac)
-#ifdef ATARIST_MWC
-    p_ptr->status |= (holder = PY_ARMOR);
-#else
     p_ptr->status |= PY_ARMOR;
-#endif
 
   item_flags = 0;
   i_ptr = &inventory[INVEN_WIELD];
@@ -198,7 +191,6 @@ void calc_bonuses()
       item_flags |= i_ptr->flags;
       i_ptr++;
     }
-#if !defined(ATARIST_MWC)
   if (TR_SLOW_DIGEST & item_flags)
     p_ptr->slow_digest = TRUE;
   if (TR_AGGRAVATE & item_flags)
@@ -221,51 +213,11 @@ void calc_bonuses()
     p_ptr->lght_resist = TRUE;
   if (TR_FFALL & item_flags)
     p_ptr->ffall = TRUE;
-#else
-  /* this avoids a bug in the Mark Williams C compiler for the Atari ST */
-  holder = TR_SLOW_DIGEST;
-  if (holder & item_flags)
-    p_ptr->slow_digest = TRUE;
-  holder = TR_AGGRAVATE;
-  if (holder & item_flags)
-    p_ptr->aggravate = TRUE;
-  holder = TR_TELEPORT;
-  if (holder & item_flags)
-    p_ptr->teleport = TRUE;
-  holder = TR_REGEN;
-  if (holder & item_flags)
-    p_ptr->regenerate = TRUE;
-  holder = TR_RES_FIRE;
-  if (holder & item_flags)
-    p_ptr->fire_resist = TRUE;
-  holder = TR_RES_ACID;
-  if (holder & item_flags)
-    p_ptr->acid_resist = TRUE;
-  holder = TR_RES_COLD;
-  if (holder & item_flags)
-    p_ptr->cold_resist = TRUE;
-  holder = TR_FREE_ACT;
-  if (holder & item_flags)
-    p_ptr->free_act = TRUE;
-  holder = TR_SEE_INVIS;
-  if (holder & item_flags)
-    p_ptr->see_inv = TRUE;
-  holder = TR_RES_LIGHT;
-  if (holder & item_flags)
-    p_ptr->lght_resist = TRUE;
-  holder = TR_FFALL;
-  if (holder & item_flags)
-    p_ptr->ffall = TRUE;
-#endif
 
   i_ptr = &inventory[INVEN_WIELD];
   for (i = INVEN_WIELD; i < INVEN_LIGHT; i++)
     {
-#ifdef ATARIST_MWC
-      if ((holder = TR_SUST_STAT) & i_ptr->flags)
-#else
       if (TR_SUST_STAT & i_ptr->flags)
-#endif
 	switch(i_ptr->p1)
 	  {
 	  case 1: p_ptr->sustain_str = TRUE; break;
