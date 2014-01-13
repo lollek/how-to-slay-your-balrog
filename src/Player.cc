@@ -7,8 +7,7 @@
 Player::Player() :
   name("null"), gender(0), gold(0), max_exp(0), exp(0),
   exp_frac(0), age(0), height(0), weight(0), level(1),
-  max_dlevel(0), mana(0), max_hp(0), plus_to_hit(0),
-  plus_to_dmg(0), ac(0), plus_to_ac(0), visual_tohit(0),
+  max_dlevel(0), mana(0), max_hp(0), ac(0), visual_tohit(0),
   visual_todmg(0), visual_ac(0), visual_tac(0),
   social_class(0), job(0), race(0), current_mana(0), current_hp(0),
   current_mfrac(0), current_hfrac(0), history(), max_stat(), cur_stat(),
@@ -158,7 +157,60 @@ int Player::getSave() const { return Tables::races[this->race].bsav; }
 int Player::getHitDie() const { return Tables::races[this->race].bhitdie; }
 int Player::getInfra() const { return Tables::races[this->race].infra; }
 int Player::getXPFactor() const { return Tables::races[this->race].b_exp; }
+int Player::getPlusToHit() const
+{
+  int total;
 
+  int stat = this->getDex();
+  if      (stat <   4) total = -3;
+  else if (stat <   6) total = -2;
+  else if (stat <   8) total = -1;
+  else if (stat <  16) total =  0;
+  else if (stat <  17) total =  1;
+  else if (stat <  18) total =  2;
+  else if (stat <  69) total =  3;
+  else if (stat < 118) total =  4;
+  else                 total =  5;
+
+  stat = this->getStr();
+  if      (stat <   4) total -= 3;
+  else if (stat <   5) total -= 2;
+  else if (stat <   7) total -= 1;
+  else if (stat <  18) total -= 0;
+  else if (stat <  94) total += 1;
+  else if (stat < 109) total += 2;
+  else if (stat < 117) total += 3;
+  else                 total += 4;
+
+  return(total);
+}
+int Player::getPlusToDmg() const
+{
+  int stat = this->getStr();
+  if      (stat <   4) return(-2);
+  else if (stat <   5) return(-1);
+  else if (stat <  16) return( 0);
+  else if (stat <  17) return( 1);
+  else if (stat <  18) return( 2);
+  else if (stat <  94) return( 3);
+  else if (stat < 109) return( 4);
+  else if (stat < 117) return( 5);
+  else                 return( 6);
+}
+int Player::getPlusToAC() const
+{
+  int stat = this->getDex();
+  if      (stat <   4) return(-4);
+  else if (stat ==  4) return(-3);
+  else if (stat ==  5) return(-2);
+  else if (stat ==  6) return(-1);
+  else if (stat <  15) return( 0);
+  else if (stat <  18) return( 1);
+  else if (stat <  59) return( 2);
+  else if (stat <  94) return( 3);
+  else if (stat < 117) return( 4);
+  else                 return( 5);
+}
 
 void Player::modifyStr(int mod) { this->modifyStat(&this->max_stat[0], mod); }
 void Player::modifyDex(int mod) { this->modifyStat(&this->max_stat[1], mod); }

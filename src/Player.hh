@@ -37,6 +37,9 @@ class Player
     int getHitDie() const;        /* Hit die */
     int getInfra() const;         /* See warm creatures  */
     int getXPFactor() const;      /* Experience factor, old: expfact */
+    int getPlusToHit() const;     /* Plusses to hit, old: ptohit */
+    int getPlusToDmg() const;     /* Plusses to dmg, old: ptodam */
+    int getPlusToAC() const;      /* Magic AC, old: ptoac */
 
     /* Mods */
     void modifyStr(int mod);
@@ -76,10 +79,7 @@ class Player
     /* Old type: int16 */
     int mana;          /* Mana points */
     int max_hp;        /* Max hitpoints, old: mhp */
-    int plus_to_hit;   /* Plusses to hit, old: ptohit */
-    int plus_to_dmg;   /* Plusses to dmg, old: ptodam */
     int ac;            /* Total AC, old: pac */
-    int plus_to_ac;    /* Magic AC, old: ptoac */
     int visual_tohit;  /* Display ToHit, old: dis_th */
     int visual_todmg;  /* Display ToDam, old: dis_td */
     int visual_ac;     /* Display AC, old: dis_ac */
