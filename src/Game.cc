@@ -53,17 +53,13 @@ int Game::createCharacter()
   status += graphics->print(2, 20, "Choose a race (? for Help): ");
   status += graphics->refresh();
 
-  for (;;)
+  int race_ret = graphics->get_key();
+  while (race_ret < 'a' || ('a' + Tables::num_races -1) < race_ret )
   {
-    string race_str;
-    graphics->getStringInput(race_str, 1);
-    if (race_str.length() == 1 && 'a' <= race_str[0] && 
-        race_str[0] <= ('a' + Tables::num_races -1))
-    {
-      player.setRace(race_str[0] - 'a');
-      break;
-    }
+    graphics->bell();
+    race_ret = graphics->get_key();
   }
+  player.setRace(race_ret - 'a');
 
   status += graphics->print(15, 3, Tables::races[player.getRace()].name);
   status += graphics->clear_from(20);
@@ -73,18 +69,13 @@ int Game::createCharacter()
   status += graphics->print(2, 20, "Choose a sex (? for Help): ");
   status += graphics->refresh();
 
-  for (;;)
+  int sex_ret = graphics->get_key();
+  while (sex_ret != 'f' && sex_ret != 'm')
   {
-    string sex_str;
-    graphics->getStringInput(sex_str, 1);
-    if (sex_str.length() == 1 && 
-        (sex_str[0] == 'm' || sex_str[0] == 'f'))
-    {
-      player.setSex(sex_str[0] == 'm');
-      break;
-    }
+    graphics->bell();
+    sex_ret = graphics->get_key();
   }
-
+  player.setSex(sex_ret == 'm');
   status += graphics->print(15, 4, player.getSex() ? "Male" : "Female");
 
   /* Generate stats */
@@ -128,9 +119,20 @@ int Game::createCharacter()
     graphics->print(1,11, "+ To AC     : " + player.getPlusToACString());
     graphics->print(1,12, "  Total AC  : " + player.getACString());
 
-    string tmpstr;
+    graphics->print(2, 20, "Hit space to reroll "
+                            "or ESC to accept characteristics: ");
+    graphics->move_cursor(56, 20);
     status += graphics->refresh();
-    graphics->getStringInput(tmpstr, 1);
+
+    /* 27 == ESC, 32 == space */
+    int key = graphics->get_key();
+    while (key != 27 && key != 32)
+    {
+      graphics->bell();
+      key = graphics->get_key();
+    }
+    if (key == 27)
+      break;
   }
 
   return status;
