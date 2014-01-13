@@ -29,7 +29,7 @@ CSRCS = main.c
 COBJS = $(addsuffix .o, $(basename $(CSRCS)))
 
 # C++ only files:
-CXXSRCS = Graphics.cc Game.cc Main.cc Player.cc
+CXXSRCS = Graphics.cc Player.cc Tables.cc Game.cc Main.cc 
 CXXOBJS = $(addsuffix .o, $(basename $(CXXSRCS)))
 
 # Shared files:
@@ -44,10 +44,12 @@ OBJS = $(addsuffix .o, $(basename $(SRCS)))
 #LIBFILES = hours news origcmds.hlp owizcmds.hlp roglcmds.hlp rwizcmds.hlp \
 #	version.hlp welcome.hlp
 
-moria : $(OBJS) $(COBJS)
+all: cmoria cxxmoria
+
+cmoria : $(OBJS) $(COBJS)
 	$(CC) $^ $(LFLAGS) -o moria
 
-cxxhack: $(OBJS) $(CXXOBJS)
+cxxmoria: $(OBJS) $(CXXOBJS)
 	$(CXX) $^ $(LFLAGS) -o moria
 
 # you must define BINDIR and LIBDIR before installing
@@ -76,7 +78,8 @@ main.o: constant.h types.h externs.h config.h
 
 #C++ only
 Graphics.o: Graphics.hh
-Player.o: Player.hh
+Player.o: Player.hh Tables.hh
+Tables.o: Tables.hh
 Game.o: Game.hh Graphics.hh Player.hh Tables.hh
 Main.o: Game.hh
 
