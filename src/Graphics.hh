@@ -14,7 +14,8 @@ class Graphics
 
     ~Graphics();
 
-    int print(int x, int y, const std::string &filename) const;
+    int print(int x, int y, const std::string &line) const;
+    int println(int x, int y, const std::string &line) const;
     int clear() const;
     int refresh() const;
     int clear_from(int line) const;

@@ -45,9 +45,16 @@ Graphics::~Graphics()
   endwin();
 }
 
-int Graphics::print(int x, int y, const string &filename) const
+int Graphics::print(int x, int y, const string &line) const
 {
-  return mvaddstr(y, x, filename.c_str());
+  return mvaddstr(y, x, line.c_str());
+}
+
+int Graphics::println(int x, int y, const string &line) const
+{
+  move(y, x);
+  wclrtoeol(this->stdscr);
+  return addstr(line.c_str());
 }
 
 int Graphics::clear() const
