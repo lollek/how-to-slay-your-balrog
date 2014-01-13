@@ -1,4 +1,5 @@
 #include <cstring>
+#include <cstdlib>
 
 #include <iostream>
 
@@ -30,6 +31,8 @@ int Game::run()
 
 int Game::createCharacter()
 {
+  Player player;
+
   /* Draw the background */
   int status = 0;
   status += graphics->clear();
@@ -37,7 +40,6 @@ int Game::createCharacter()
   status += graphics->print(1, 3, "Race        :");
   status += graphics->print(1, 4, "Sex         :");
   status += graphics->print(1, 5, "Class       :");
-
 
   /* Ask for race */
   for (int i = 0; i < Tables::num_races; ++i)
@@ -51,17 +53,19 @@ int Game::createCharacter()
   status += graphics->print(2, 20, "Choose a race (? for Help): ");
   status += graphics->refresh();
 
-  int race = -1;
-  while (race == -1)
+  for (;;)
   {
     string race_str;
     graphics->getStringInput(race_str, 1);
     if (race_str.length() == 1 && 'a' <= race_str[0] && 
         race_str[0] <= ('a' + Tables::num_races -1))
-      race = race_str[0] - 'a';
+    {
+      player.setRace(race_str[0] - 'a');
+      break;
+    }
   }
 
-  status += graphics->print(15, 3, Tables::races[race].name);
+  status += graphics->print(15, 3, Tables::races[player.getRace()].name);
   status += graphics->clear_from(20);
 
   /* Ask for sex */
@@ -69,18 +73,43 @@ int Game::createCharacter()
   status += graphics->print(2, 20, "Choose a sex (? for Help): ");
   status += graphics->refresh();
 
-  int sex = -1;
-  while (sex == -1)
+  for (;;)
   {
     string sex_str;
     graphics->getStringInput(sex_str, 1);
     if (sex_str.length() == 1 && 
         (sex_str[0] == 'm' || sex_str[0] == 'f'))
-      sex = sex_str[0] == 'm';
+    {
+      player.setSex(sex_str[0] == 'm');
+      break;
+    }
   }
 
-  status += graphics->print(15, 4, sex ? "Male" : "Female");
-  status += graphics->refresh();
+  status += graphics->print(15, 4, player.getSex() ? "Male" : "Female");
+  status += graphics->clear_from(20);
+
+  /* Generate stats */
+  bool stats_generation_is_done = false;
+  while (!stats_generation_is_done)
+  {
+    player.generate();
+
+    /* Print background */
+    graphics->print(27, 14, "Character Background");
+    graphics->println(10, 15, player.getBackground());
+
+    /* Print the stats */
+    graphics->print(38, 2, "Age          :" + to_string(player.getAge()));
+    graphics->print(38, 3, "Height       :" + to_string(player.getHeight()));
+    graphics->print(38, 4, "Weight       :" + to_string(player.getWeight()));
+    graphics->print(38, 5, "Social Class :" + to_string(player.getSocialClass()));
+
+    // Only put_stats left!?
+
+    string tmpstr;
+    status += graphics->refresh();
+    graphics->getStringInput(tmpstr, 1);
+  }
 
   return status;
 }
