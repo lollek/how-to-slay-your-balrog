@@ -123,6 +123,11 @@ int Game::createCharacter()
     graphics->print(61, 6, "INT :" + player.getIntString());
     graphics->print(61, 7, "CHA :" + player.getChaString());
 
+    graphics->print(1, 9, "+ To Hit    : " + player.getPlusToHitString());
+    graphics->print(1,10, "+ To Damage : " + player.getPlusToDmgString());
+    graphics->print(1,11, "+ To AC     : " + player.getPlusToACString());
+    graphics->print(1,12, "  Total AC  ");
+
     string tmpstr;
     status += graphics->refresh();
     graphics->getStringInput(tmpstr, 1);

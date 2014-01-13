@@ -19,31 +19,20 @@ class Player
     void operator=(const Player&) = delete;
 
     /* Getters */
-    int getRace() const;         /* race as number, see Tables.hh */
-    bool getSex() const;         /* true if male */
-    int getAge() const;
-    int getWeight() const;
-    int getHeight() const;
+    int getRace() const;         /* Race as number, see Tables.hh */
+    bool getSex() const;         /* True if male */
+    int getAge() const;          /* Age of character */
+    int getWeight() const;       /* Weight of character */
+    int getHeight() const;       /* Height of character */
     int getSocialClass() const;  /* Class, 0 - 100 */
 
-    int getStr() const;          /* Get stat (raw form) */
+    /* Stats in raw form, i.e. 0 - 118 */
+    int getStr() const;
     int getDex() const;
     int getCon() const;
     int getWis() const;
     int getInt() const;
     int getCha() const;
-
-    std::string getAgeString() const;
-    std::string getWeightString() const;
-    std::string getHeightString() const;
-    std::string getSocialClassString() const;
-
-    std::string getStrString() const; /* Get stat in written form */
-    std::string getDexString() const;
-    std::string getConString() const;
-    std::string getWisString() const;
-    std::string getIntString() const;
-    std::string getChaString() const;
 
     int getDisarm() const;        /* % to disarm */
     int getSearchChance() const;  /* chance in search, old: srh */
@@ -59,6 +48,22 @@ class Player
     int getPlusToDmg() const;     /* Plusses to dmg, old: ptodam */
     int getPlusToAC() const;      /* Magic AC, old: ptoac */
     std::string getBackground() const; /* A 0-240 letter background info */
+
+    /* Some of the above, in a %6d-string format */
+    std::string getStrString() const; /* Get stat in written form */
+    std::string getDexString() const;
+    std::string getConString() const;
+    std::string getWisString() const;
+    std::string getIntString() const;
+    std::string getChaString() const;
+    std::string getAgeString() const;
+
+    std::string getWeightString() const;
+    std::string getHeightString() const;
+    std::string getSocialClassString() const;
+    std::string getPlusToHitString() const;
+    std::string getPlusToDmgString() const;
+    std::string getPlusToACString() const;
 
     /* Mods */
     void modifyStr(int mod);

@@ -170,6 +170,18 @@ string Player::getSocialClassString() const
 {
   return this->formatInt(this->getSocialClass());
 }
+string Player::getPlusToHitString() const
+{
+  return this->formatInt(this->getPlusToHit());
+}
+string Player::getPlusToDmgString() const
+{
+  return this->formatInt(this->getPlusToDmg());
+}
+string Player::getPlusToACString() const
+{
+  return this->formatInt(this->getPlusToAC());
+}
 string Player::formatInt(int val) const
 {
   string return_string = "      ";
