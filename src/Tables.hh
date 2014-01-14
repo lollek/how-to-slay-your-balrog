@@ -5,6 +5,37 @@
 
 namespace Tables
 {
+  const int num_jobs = 6;
+  enum job_t { WARRIOR, MAGE, PRIEST, ROGUE, RANGER, PALADIN };
+  extern struct job_data_t
+  {
+    std::string title;     /* type of class, old char*  */
+
+    /* Old type int8u */
+    int adj_hd;             /* Adjust hit points  */
+    int mdis;               /* mod disarming traps  */
+    int msrh;               /* modifier to searching */
+    int mstl;               /* modifier to stealth  */
+    int mfos;               /* modifier to freq-of-search */
+    int mbth;               /* modifier to base to hit */
+    int mbthb;              /* modifier to base to hit - bows*/
+    int msav;               /* Class modifier to save */
+
+    /* Old type int16 */
+    int madj_str;           /* Class modifier for strength */
+    int madj_int;           /* Class modifier for intelligence*/
+    int madj_wis;           /* Class modifier for wisdom */
+    int madj_dex;           /* Class modifier for dexterity */
+    int madj_con;           /* Class modifier for constitution*/
+    int madj_chr;           /* Class modifier for charisma */
+
+    /* Old type int8u */
+    int spell;              /* class use mage spells */
+    int m_exp;              /* Class experience factor */
+    int first_spell_lev;    /* First level where class can use spells. */
+  } jobs[];
+
+
   const int num_races = 7;
   enum race_t { HUMAN, HALF_ELF, ELF, HALFLING,
                 GNOME, HALF_ORC, HALF_TROLL };
