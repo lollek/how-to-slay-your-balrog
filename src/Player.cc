@@ -356,6 +356,11 @@ string Player::getBackground() const
   return this->history;
 }
 
+void Player::modifyGold(int gold)
+{
+  this->gold += gold;
+}
+
 void Player::modifyStr(int mod) { this->modifyStat(&this->max_stat[0], mod); }
 void Player::modifyDex(int mod) { this->modifyStat(&this->max_stat[1], mod); }
 void Player::modifyCon(int mod) { this->modifyStat(&this->max_stat[2], mod); }
@@ -421,6 +426,5 @@ void Player::setJob(int job)
 
   this->current_hp = this->getMaxHP();
 }
-
 
 

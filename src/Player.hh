@@ -70,6 +70,8 @@ class Player
     std::string getACString() const;
 
     /* Mods */
+    void modifyGold(int gold);
+
     void modifyStr(int mod);
     void modifyDex(int mod);
     void modifyCon(int mod);
