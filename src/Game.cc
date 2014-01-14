@@ -159,14 +159,23 @@ int Game::createCharacter()
   }
   player_job = class_array[player_job - 'a'];
   player.setJob(player_job);
+  graphics->print(15, 5, Tables::jobs[player_job].title);
+
+  /* Add money */
+  int neg_gold = (player.getStr() + player.getDex() + player.getCon() +
+                  player.getWis() + player.getInt() - 50) * 5;
+  int gold = 325 + rand() %25 +1 + player.getSocialClass() *6 +
+             player.getCha() + (!player.getSex())*50 - neg_gold;
+  if (gold < 80)
+    gold = 80;
+  player.modifyGold(gold);
+
+
 
   graphics->clear_from(20);
-  graphics->print(15, 5, Tables::jobs[player_job].title);
 
   graphics->refresh();
   /*
-  get_class();
-  get_money();
   put_stats();
   put_misc2();
   put_misc3();
