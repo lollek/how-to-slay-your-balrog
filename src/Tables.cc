@@ -1,7 +1,7 @@
 #include "Tables.hh"
 
-Tables::class_data_T Tables::jobs[] = {
-/*        HP Dis Src Stl Fos bth btb sve S  I  W  D Co Ch  Spell Exp  spl */
+Tables::job_data_t Tables::jobs[] = {
+/*          HP Dis Src Stl Fos bth btb sve S  I  W  D Co Ch  Spell Exp  spl */
   {"Warrior",9, 25, 14, 1, 38, 70, 55, 18, 5,-2,-2, 2, 2,-1, NONE,    0, 0},
   {"Mage",   0, 30, 16, 2, 20, 34, 20, 36,-5, 3, 0, 1,-2, 1, MAGE,   30, 1},
   {"Priest", 2, 25, 16, 2, 32, 48, 35, 30,-3,-3, 3,-1, 0, 2, PRIEST, 20, 1},
