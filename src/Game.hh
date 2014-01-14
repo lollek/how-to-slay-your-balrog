@@ -19,7 +19,15 @@ class Game
     int run();
 
   private:
-    int createCharacter();
+    void createCharacter();
+    void CreateSub_selectRace();
+    void CreateSub_selectSex();
+    void CreateSub_generatePlayer();
+    void CreateSub_printBackground() const;
+    void CreateSub_printSocialStats() const;
+    void CreateSub_printFightingStats() const;
+    void CreateSub_selectJob();
+    void CreateSub_addStartingMoney();
 
     const std::string scorefile = "../files/scores";
     const std::string splashfile = "../files/news";
