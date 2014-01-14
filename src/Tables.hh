@@ -6,7 +6,7 @@
 namespace Tables
 {
   const int num_jobs = 6;
-  enum job_t { WARRIOR, MAGE, PRIEST, ROGUE, RANGER, PALADIN };
+  enum job_t { WARRIOR, MAGE, PRIEST, ROGUE, RANGER, PALADIN, NONE };
   extern struct job_data_t
   {
     std::string title;     /* type of class, old char*  */
@@ -30,7 +30,7 @@ namespace Tables
     int madj_chr;           /* Class modifier for charisma */
 
     /* Old type int8u */
-    int spell;              /* class use mage spells */
+    job_t spell;            /* class use mage spells */
     int m_exp;              /* Class experience factor */
     int first_spell_lev;    /* First level where class can use spells. */
   } jobs[];
