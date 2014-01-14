@@ -47,7 +47,9 @@ class Player
     int getPlusToHit() const;     /* Plusses to hit, old: ptohit */
     int getPlusToDmg() const;     /* Plusses to dmg, old: ptodam */
     int getPlusToAC() const;      /* Magic AC, old: ptoac */
+    int getPlusToHP() const;      /* Plusses to HP */
     int getAC() const;            /* AC + Magic AC, old: dis_ac */
+    int getMaxHP() const;         /* Max hitpoints, old: mhp */
     std::string getBackground() const; /* A 0-240 letter background info */
 
     /* Some of the above, in a %6d-string format */
@@ -78,6 +80,7 @@ class Player
     /* Setters */
     void setRace(int race);
     void setSex(int sex);
+    void setJob(int job);
 
   private:
 
@@ -106,7 +109,6 @@ class Player
 
     /* Old type: int16 */
     int mana;          /* Mana points */
-    int max_hp;        /* Max hitpoints, old: mhp */
     int ac;            /* Total AC, old: pac */
     int social_class;  /* Social class, old: sc */
 

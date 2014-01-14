@@ -10,8 +10,8 @@ using namespace std;
 Player::Player() :
   name("null"), gender(0), gold(0), max_exp(0), exp(0),
   exp_frac(0), age(0), height(0), weight(0), level(1),
-  max_dlevel(0), mana(0), max_hp(0), ac(0),
-  social_class(0), job(0), race(0), current_mana(0), current_hp(0),
+  max_dlevel(0), mana(0), ac(0),
+  social_class(0), job(-1), race(0), current_mana(0), current_hp(0),
   current_mfrac(0), current_hfrac(0), history(), max_stat(), cur_stat(),
   use_stat(), mod_stat(), flag_status(0), flag_rest(0),
   flag_blind(0), flag_paralysis(0), flag_confused(0), 
@@ -114,41 +114,54 @@ int Player::getAge() const { return this->age; }
 int Player::getWeight() const { return this->weight; }
 int Player::getHeight() const { return this->height; }
 int Player::getSocialClass() const { return this->social_class; }
+
 int Player::getStr() const { return this->max_stat[0]; }
 int Player::getDex() const { return this->max_stat[1]; }
 int Player::getCon() const { return this->max_stat[2]; }
 int Player::getWis() const { return this->max_stat[3]; }
 int Player::getInt() const { return this->max_stat[4]; }
 int Player::getCha() const { return this->max_stat[5]; }
-string Player::getAgeString() const { return this->formatInt(this->getAge()); }
+
+string Player::getAgeString() const 
+{ 
+  return this->formatInt(this->getAge()); 
+}
+
 string Player::getWeightString() const 
 {
   return this->formatInt(this->getWeight());
 }
+
 string Player::getHeightString() const 
 {
   return this->formatInt(this->getHeight());
 }
+
 string Player::getSocialClassString() const 
 {
   return this->formatInt(this->getSocialClass());
 }
+
 string Player::getPlusToHitString() const
 {
   return this->formatInt(this->getPlusToHit());
 }
+
 string Player::getPlusToDmgString() const
 {
   return this->formatInt(this->getPlusToDmg());
 }
+
 string Player::getPlusToACString() const
 {
   return this->formatInt(this->getPlusToAC());
 }
+
 string Player::getACString() const
 {
   return this->formatInt(this->getAC());
 }
+
 string Player::formatInt(int val) const
 {
   string return_string = "      ";
@@ -160,6 +173,7 @@ string Player::formatInt(int val) const
   } while (val != 0 && i > 0);
   return return_string;
 }
+
 string Player::getStrString() const { return this->getStatString(0); }
 string Player::getDexString() const { return this->getStatString(1); }
 string Player::getConString() const { return this->getStatString(2); }
@@ -187,6 +201,7 @@ string Player::getStatString(int stat) const
   }
   return return_string;
 }
+
 int Player::getDisarm() const
 {
   const int stat = this->getDex();
@@ -207,15 +222,24 @@ int Player::getDisarm() const
 
   return bonus + Tables::races[this->race].b_dis;
 }
+
 int Player::getSearchChance() const { return Tables::races[this->race].srh; }
 int Player::getSearchFreq() const { return Tables::races[this->race].fos; }
 int Player::getStealth() const { return Tables::races[this->race].stl; }
 int Player::getBaseToHit() const { return Tables::races[this->race].bth; }
 int Player::getBowToHit() const { return Tables::races[this->race].bthb; }
 int Player::getSave() const { return Tables::races[this->race].bsav; }
-int Player::getHitDie() const { return Tables::races[this->race].bhitdie; }
+
+int Player::getHitDie() const { 
+  if (this->race == -1)
+    return Tables::races[this->race].bhitdie;
+  else
+    return Tables::races[this->race].bhitdie + Tables::jobs[this->job].adj_hd;
+}
+
 int Player::getInfra() const { return Tables::races[this->race].infra; }
 int Player::getXPFactor() const { return Tables::races[this->race].b_exp; }
+
 int Player::getPlusToHit() const
 {
   int total;
@@ -270,10 +294,28 @@ int Player::getPlusToAC() const
   else if (stat < 117) return( 4);
   else                 return( 5);
 }
+
+int Player::getPlusToHP() const
+{
+  int con = this->getCon();
+  if      (con <    7) return(con - 7);
+  else if (con <   17) return(0);
+  else if (con ==  17) return(1);
+  else if (con <   94) return(2);
+  else if (con <  117) return(3);
+  else                 return(4);
+}
+
 int Player::getAC() const
 {
   return this->ac + this->getPlusToAC();
 }
+
+int Player::getMaxHP() const
+{
+  return this->getHitDie() + this->getPlusToHP();
+}
+
 string Player::getBackground() const
 {
   return this->history;
@@ -330,7 +372,19 @@ void Player::setSex(int sex)
   this->gender = sex;
 }
 
+void Player::setJob(int job)
+{
+  this->job = job;
 
+  this->modifyStr(Tables::jobs[job].madj_str);
+  this->modifyDex(Tables::jobs[job].madj_dex);
+  this->modifyCon(Tables::jobs[job].madj_con);
+  this->modifyWis(Tables::jobs[job].madj_wis);
+  this->modifyInt(Tables::jobs[job].madj_int);
+  this->modifyCha(Tables::jobs[job].madj_chr);
+
+  this->current_hp = this->getMaxHP();
+}
 
 
 
