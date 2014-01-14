@@ -122,22 +122,22 @@ int Player::getWis() const { return this->max_stat[3]; }
 int Player::getInt() const { return this->max_stat[4]; }
 int Player::getCha() const { return this->max_stat[5]; }
 
-string Player::getAgeString() const 
-{ 
+string Player::getAgeString() const
+{
   return this->formatInt(this->getAge()); 
 }
 
-string Player::getWeightString() const 
+string Player::getWeightString() const
 {
   return this->formatInt(this->getWeight());
 }
 
-string Player::getHeightString() const 
+string Player::getHeightString() const
 {
   return this->formatInt(this->getHeight());
 }
 
-string Player::getSocialClassString() const 
+string Player::getSocialClassString() const
 {
   return this->formatInt(this->getSocialClass());
 }
@@ -205,40 +205,69 @@ string Player::getStatString(int stat) const
 int Player::getDisarm() const
 {
   const int stat = this->getDex();
-  int bonus;
+  int bonus = Tables::races[this->race].b_dis +
+              Tables::jobs[this->job].mdis;
 
-  if      (stat <   3) bonus = -8;
-  else if (stat ==  4) bonus = -6;
-  else if (stat ==  5) bonus = -4;
-  else if (stat ==  6) bonus = -2;
-  else if (stat ==  7) bonus = -1;
-  else if (stat <  13) bonus =  0;
-  else if (stat <  16) bonus =  1;
-  else if (stat <  18) bonus =  2;
-  else if (stat <  59) bonus =  4;
-  else if (stat <  94) bonus =  5;
-  else if (stat < 117) bonus =  6;
-  else                 bonus =  8;
+  if      (stat <   3) bonus += -8;
+  else if (stat ==  4) bonus += -6;
+  else if (stat ==  5) bonus += -4;
+  else if (stat ==  6) bonus += -2;
+  else if (stat ==  7) bonus += -1;
+  else if (stat <  13) bonus +=  0;
+  else if (stat <  16) bonus +=  1;
+  else if (stat <  18) bonus +=  2;
+  else if (stat <  59) bonus +=  4;
+  else if (stat <  94) bonus +=  5;
+  else if (stat < 117) bonus +=  6;
+  else                 bonus +=  8;
 
-  return bonus + Tables::races[this->race].b_dis;
+  return bonus;
 }
 
-int Player::getSearchChance() const { return Tables::races[this->race].srh; }
-int Player::getSearchFreq() const { return Tables::races[this->race].fos; }
-int Player::getStealth() const { return Tables::races[this->race].stl; }
-int Player::getBaseToHit() const { return Tables::races[this->race].bth; }
-int Player::getBowToHit() const { return Tables::races[this->race].bthb; }
-int Player::getSave() const { return Tables::races[this->race].bsav; }
-
-int Player::getHitDie() const { 
-  if (this->race == -1)
-    return Tables::races[this->race].bhitdie;
-  else
-    return Tables::races[this->race].bhitdie + Tables::jobs[this->job].adj_hd;
+int Player::getSearchChance() const
+{
+  return Tables::races[this->race].srh + Tables::jobs[this->job].msrh;
 }
 
-int Player::getInfra() const { return Tables::races[this->race].infra; }
-int Player::getXPFactor() const { return Tables::races[this->race].b_exp; }
+int Player::getSearchFreq() const
+{
+  return Tables::races[this->race].fos + Tables::jobs[this->job].mfos;
+}
+
+int Player::getStealth() const
+{
+  return Tables::races[this->race].stl + Tables::jobs[this->job].mstl;
+}
+
+int Player::getBaseToHit() const
+{
+  return Tables::races[this->race].bth + Tables::jobs[this->job].mbth;
+}
+
+int Player::getBowToHit() const 
+{
+  return Tables::races[this->race].bthb + Tables::jobs[this->job].mbthb;
+}
+
+int Player::getSave() const
+{
+  return Tables::races[this->race].bsav + Tables::jobs[this->job].msav;
+}
+
+int Player::getHitDie() const
+{ 
+  return Tables::races[this->race].bhitdie + Tables::jobs[this->job].adj_hd;
+}
+
+int Player::getInfra() const
+{
+  return Tables::races[this->race].infra;
+}
+
+int Player::getXPFactor() const
+{
+  return Tables::races[this->race].b_exp + Tables::jobs[this->job].m_exp;
+}
 
 int Player::getPlusToHit() const
 {
@@ -267,6 +296,7 @@ int Player::getPlusToHit() const
 
   return(total);
 }
+
 int Player::getPlusToDmg() const
 {
   int stat = this->getStr();
@@ -280,6 +310,7 @@ int Player::getPlusToDmg() const
   else if (stat < 117) return( 5);
   else                 return( 6);
 }
+
 int Player::getPlusToAC() const
 {
   int stat = this->getDex();
@@ -315,7 +346,7 @@ int Player::getMaxHP() const
 {
   int hd = this->getHitDie();
   int ptohp = this->getPlusToHP();
-  int maxhp = this->getHitDie() + this->getPlusToHP;
+  int maxhp = this->getHitDie() + this->getPlusToHP();
   maxhp += (this->level -1) * (hd/2 + ptohp);
   return maxhp;
 }
