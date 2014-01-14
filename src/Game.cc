@@ -21,6 +21,7 @@ Game::Game(const string &savefile, unsigned seed) :
 
 Game::~Game()
 {
+  delete player;
   delete graphics;
 }
 
