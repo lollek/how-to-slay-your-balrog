@@ -53,15 +53,16 @@ int Game::createCharacter()
   status += graphics->print(2, 20, "Choose a race (? for Help): ");
   status += graphics->refresh();
 
-  int race_ret = graphics->get_key();
-  while (race_ret < 'a' || ('a' + Tables::num_races -1) < race_ret )
+  int player_race = graphics->get_key();
+  while (player_race < 'a' || ('a' + Tables::num_races -1) < player_race)
   {
     graphics->bell();
-    race_ret = graphics->get_key();
+    player_race = graphics->get_key();
   }
-  player.setRace(race_ret - 'a');
+  player_race -= 'a';
+  player.setRace(player_race);
 
-  status += graphics->print(15, 3, Tables::races[player.getRace()].name);
+  status += graphics->print(15, 3, Tables::races[player_race].name);
   status += graphics->clear_from(20);
 
   /* Ask for sex */
@@ -69,14 +70,15 @@ int Game::createCharacter()
   status += graphics->print(2, 20, "Choose a sex (? for Help): ");
   status += graphics->refresh();
 
-  int sex_ret = graphics->get_key();
-  while (sex_ret != 'f' && sex_ret != 'm')
+  int player_sex = graphics->get_key();
+  while (player_sex != 'f' && player_sex != 'm')
   {
     graphics->bell();
-    sex_ret = graphics->get_key();
+    player_sex = graphics->get_key();
   }
-  player.setSex(sex_ret == 'm');
-  status += graphics->print(15, 4, player.getSex() ? "Male" : "Female");
+  player_sex = player_sex == 'm';
+  player.setSex(player_sex);
+  status += graphics->print(15, 4, player_sex ? "Male" : "Female");
 
   /* Generate stats */
   bool stats_generation_is_done = false;
@@ -121,7 +123,6 @@ int Game::createCharacter()
 
     graphics->print(2, 20, "Hit space to reroll "
                             "or ESC to accept characteristics: ");
-    graphics->move_cursor(56, 20);
     status += graphics->refresh();
 
     /* 27 == ESC, 32 == space */
@@ -134,6 +135,43 @@ int Game::createCharacter()
     if (key == 27)
       break;
   }
+
+  /* Ask for class, we use a bitwise AND for this */
+  int class_array[] = { -1, -1, -1, -1, -1, -1 };
+  int k = 0;
+  for (unsigned i = 0, mask = 0x1; i < Tables::num_jobs; ++i, mask <<= 1)
+    if (Tables::races[player.getRace()].rtclass & mask)
+    {
+      class_array[k] = i;
+      const int x = 2 + (15 * (k % 5));
+      const int y = 21 + k / 5;
+      string tmp_string = "a) " + Tables::jobs[i].title;
+      tmp_string[0] += k++;
+      graphics->print(x, y, tmp_string);
+    }
+
+  graphics->println(2, 20, "Choose a class (? for Help): ");
+  int player_job = graphics->get_key();
+  while (player_job < 'a' || ('a' + k) <= player_job)
+  {
+    graphics->bell();
+    player_job = graphics->get_key();
+  }
+  player_job = class_array[player_job - 'a'];
+  player.setJob(player_job);
+
+  graphics->clear_from(20);
+  graphics->print(15, 5, Tables::jobs[player_job].title);
+
+  graphics->refresh();
+  /*
+  get_class();
+  get_money();
+  put_stats();
+  put_misc2();
+  put_misc3();
+  get_name();
+  */
 
   return status;
 }
