@@ -5,8 +5,13 @@
 
 namespace Tables
 {
+  const int max_player_level = 40;
   const int num_jobs = 6;
+  const int num_races = 7;
+
   enum job_t { WARRIOR, MAGE, PRIEST, ROGUE, RANGER, PALADIN, NONE };
+  enum race_t { HUMAN, HALF_ELF, ELF, HALFLING, GNOME, HALF_ORC, HALF_TROLL };
+
   extern struct job_data_t
   {
     std::string title;     /* type of class, old char*  */
@@ -36,9 +41,6 @@ namespace Tables
   } jobs[];
 
 
-  const int num_races = 7;
-  enum race_t { HUMAN, HALF_ELF, ELF, HALFLING,
-                GNOME, HALF_ORC, HALF_TROLL };
   extern struct race_data_t
   {
     std::string name;  /* Type of race (old: char *trace) */
