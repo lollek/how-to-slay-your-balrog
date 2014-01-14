@@ -12,6 +12,8 @@ namespace Tables
   enum job_t { WARRIOR, MAGE, PRIEST, ROGUE, RANGER, PALADIN, NONE };
   enum race_t { HUMAN, HALF_ELF, ELF, HALFLING, GNOME, HALF_ORC, HALF_TROLL };
 
+  extern unsigned xp_tables[];
+
   extern struct job_data_t
   {
     std::string title;     /* type of class, old char*  */
