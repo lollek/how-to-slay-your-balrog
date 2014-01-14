@@ -46,48 +46,12 @@ void Player::generate()
   for (int i = 0; i < 6; ++i)
     this->max_stat[i] = 5 + dice[3*i] + dice[3*i +1] + dice[3*i +2];
 
-  /* Apply racial modifier */
-  switch(this->race)
-  {
-    case 0: /* Human */ break;
-
-    case 1: /* Half-Elf */
-      this->modifyStr(-1); this->modifyDex(1); this->modifyCon(-1);
-      this->modifyInt(1);  this->modifyCha(1);
-      break;
-
-    case 2: /* Elf */
-      this->modifyStr(-1); this->modifyDex(1); this->modifyCon(-2);
-      this->modifyWis(1);  this->modifyInt(2); this->modifyCha(1);
-      break;
-
-    case 3: /* Halfling */
-      this->modifyStr(-2); this->modifyDex(3); this->modifyCon(1);
-      this->modifyWis(1);  this->modifyInt(2); this->modifyCha(1);
-      break;
-
-    case 4: /* Gnome */
-      this->modifyStr(-1); this->modifyDex(2); this->modifyCon(1);
-      this->modifyInt(2);  this->modifyCha(-2);
-      break;
-
-    case 5: /* Dwarf */
-      this->modifyStr(2); this->modifyDex(-2); this->modifyCon(2);
-      this->modifyWis(1); this->modifyInt(-3); this->modifyCha(-3);
-      break;
-
-    case 6: /* Half-Orc */
-      this->modifyStr(2);  this->modifyCon(1);
-      this->modifyInt(-1); this->modifyCha(-4);
-      break;
-
-    case 7: /* Half-Troll */
-      this->modifyStr(4);  this->modifyDex(-4); this->modifyCon(3);
-      this->modifyWis(-2); this->modifyInt(-4); this->modifyCha(-6);
-      break;
-
-    default: break;
-  }
+  this->modifyStr(Tables::races[this->race].str_adj);
+  this->modifyDex(Tables::races[this->race].dex_adj);
+  this->modifyCon(Tables::races[this->race].con_adj);
+  this->modifyWis(Tables::races[this->race].wis_adj);
+  this->modifyInt(Tables::races[this->race].int_adj);
+  this->modifyCha(Tables::races[this->race].chr_adj);
 
   /* Copy max_stat to cur_stat */
   for (int i = 0; i < 6; ++i)
