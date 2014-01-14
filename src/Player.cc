@@ -313,7 +313,11 @@ int Player::getAC() const
 
 int Player::getMaxHP() const
 {
-  return this->getHitDie() + this->getPlusToHP();
+  int hd = this->getHitDie();
+  int ptohp = this->getPlusToHP();
+  int maxhp = this->getHitDie() + this->getPlusToHP;
+  maxhp += (this->level -1) * (hd/2 + ptohp);
+  return maxhp;
 }
 
 string Player::getBackground() const
@@ -382,6 +386,7 @@ void Player::setJob(int job)
   this->modifyWis(Tables::jobs[job].madj_wis);
   this->modifyInt(Tables::jobs[job].madj_int);
   this->modifyCha(Tables::jobs[job].madj_chr);
+  /* TODO: set_use_stat here */
 
   this->current_hp = this->getMaxHP();
 }
