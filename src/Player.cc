@@ -114,6 +114,7 @@ int Player::getAge() const { return age; }
 int Player::getWeight() const { return weight; }
 int Player::getHeight() const { return height; }
 int Player::getSocialClass() const { return social_class; }
+int Player::getGold() const { return gold; }
 int Player::getLevel() const { return level; }
 int Player::getXP() const { return exp; }
 int Player::getMaxXP() const { return max_exp; }
@@ -125,31 +126,6 @@ int Player::getCon() const { return max_stat[2]; }
 int Player::getWis() const { return max_stat[3]; }
 int Player::getInt() const { return max_stat[4]; }
 int Player::getCha() const { return max_stat[5]; }
-
-string Player::getAgeString() const { return formatInt(getAge()); }
-string Player::getWeightString() const { return formatInt(getWeight()); }
-string Player::getHeightString() const { return formatInt(getHeight()); }
-string Player::getSocialClassString() const { return formatInt(getSocialClass()); }
-string Player::getLevelString() const { return formatInt(level); }
-string Player::getXPString() const { return formatInt(getXP()); }
-string Player::getMaxXPString() const { return formatInt(getMaxXP()); }
-string Player::getXPToLevelString() const { return formatInt(getXPToLevel()) ; }
-string Player::getPlusToHitString() const { return formatInt(getPlusToHit()); }
-string Player::getPlusToDmgString() const { return formatInt(getPlusToDmg()); }
-string Player::getPlusToACString() const { return formatInt(getPlusToAC()); }
-string Player::getACString() const { return formatInt(getAC()); }
-
-string Player::formatInt(int val) const
-{
-  string return_string = "      ";
-  int i = return_string.length();
-  do
-  {
-    return_string[--i] = '0' + val % 10;
-    val /= 10;
-  } while (val != 0 && i > 0);
-  return return_string;
-}
 
 string Player::getStrString() const { return getStatString(0); }
 string Player::getDexString() const { return getStatString(1); }

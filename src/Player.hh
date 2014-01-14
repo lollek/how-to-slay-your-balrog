@@ -25,6 +25,7 @@ class Player
     int getWeight() const;       /* Weight of character */
     int getHeight() const;       /* Height of character */
     int getSocialClass() const;  /* Class, 0 - 100 */
+    int getGold() const;
     int getLevel() const;
     int getXP() const;
     int getMaxXP() const;
@@ -63,19 +64,6 @@ class Player
     std::string getWisString() const;
     std::string getIntString() const;
     std::string getChaString() const;
-
-    std::string getAgeString() const;
-    std::string getWeightString() const;
-    std::string getHeightString() const;
-    std::string getSocialClassString() const;
-    std::string getLevelString() const;
-    std::string getXPString() const;
-    std::string getMaxXPString() const;
-    std::string getXPToLevelString() const;
-    std::string getPlusToHitString() const;
-    std::string getPlusToDmgString() const;
-    std::string getPlusToACString() const;
-    std::string getACString() const;
 
     /* Mods */
     void modifyGold(int gold);

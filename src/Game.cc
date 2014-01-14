@@ -30,6 +30,18 @@ int Game::run()
   return 0;
 }
 
+string Game::to6dStr(int value) const
+{
+  string return_string = "      ";
+  int i = return_string.length();
+  do
+  {
+    return_string[--i] = '0' + value % 10;
+    value /= 10;
+  } while (value != 0 && i > 0);
+  return return_string;
+}
+
 void Game::createCharacter()
 {
   player = new Player;
@@ -46,11 +58,13 @@ void Game::createCharacter()
   CreateSub_generatePlayer();
   CreateSub_selectJob();
   CreateSub_addStartingMoney();
+  CreateSub_printFightingStats();
 
-  graphics->clear_from(20);
+  graphics->clear_from(14);
+  CreateSub_printMiscStats();
+
   graphics->refresh();
   /*
-  put_stats();
   put_misc2();
   put_misc3();
   get_name();
@@ -146,25 +160,40 @@ void Game::CreateSub_printBackground() const
 
 void Game::CreateSub_printSocialStats() const
 {
-  graphics->println(38, 2, "Age          : " + player->getAgeString());
-  graphics->println(38, 3, "Height       : " + player->getHeightString());
-  graphics->println(38, 4, "Weight       : " + player->getWeightString());
-  graphics->println(38, 5, "Social Class : " + player->getSocialClassString());
+  graphics->println(38, 2, "Age          : " + to6dStr(player->getAge()));
+  graphics->println(38, 3, "Height       : " + to6dStr(player->getHeight()));
+  graphics->println(38, 4, "Weight       : " + to6dStr(player->getWeight()));
+  graphics->println(38, 5, "Social Class : " + to6dStr(player->getSocialClass()));
 }
 
 void Game::CreateSub_printFightingStats() const
 {
-  graphics->print(61, 2, "STR :" + player->getStrString());
-  graphics->print(61, 3, "DEX :" + player->getDexString());
-  graphics->print(61, 4, "CON :" + player->getConString());
-  graphics->print(61, 5, "WIS :" + player->getWisString());
-  graphics->print(61, 6, "INT :" + player->getIntString());
-  graphics->print(61, 7, "CHA :" + player->getChaString());
+  graphics->print(61, 2, "STR :" + to6dStr(player->getStr()));
+  graphics->print(61, 3, "DEX :" + to6dStr(player->getDex()));
+  graphics->print(61, 4, "CON :" + to6dStr(player->getCon()));
+  graphics->print(61, 5, "WIS :" + to6dStr(player->getWis()));
+  graphics->print(61, 6, "INT :" + to6dStr(player->getInt()));
+  graphics->print(61, 7, "CHA :" + to6dStr(player->getCha()));
 
-  graphics->print(1, 9, "+ To Hit    : " + player->getPlusToHitString());
-  graphics->print(1,10, "+ To Damage : " + player->getPlusToDmgString());
-  graphics->print(1,11, "+ To AC     : " + player->getPlusToACString());
-  graphics->print(1,12, "  Total AC  : " + player->getACString());
+  graphics->print(1, 9, "+ To Hit    : " + to6dStr(player->getPlusToHit()));
+  graphics->print(1,10, "+ To Damage : " + to6dStr(player->getPlusToDmg()));
+  graphics->print(1,11, "+ To AC     : " + to6dStr(player->getPlusToAC()));
+  graphics->print(1,12, "  Total AC  : " + to6dStr(player->getAC()));
+}
+
+void Game::CreateSub_printMiscStats() const
+{
+  graphics->print(29, 9, "Level      : " + to6dStr(player->getLevel()));
+  graphics->print(29,10, "Experience : " + player->getXP());
+  graphics->print(29,11, "Max Exp    : " + player->getMaxXP());
+  string xp_to_advance = player->getLevel() == Tables::max_player_level ?
+                          "******" : to6dStr(player->getXPToLevel());
+  graphics->print(29,12, "Exp to Adv.: " + xp_to_advance);
+  graphics->print(29,13, "Gold       : " + to6dStr(player->getGold()));
+  graphics->print(52, 9, "Max Hit Points : " + to6dStr(player->getMaxHP()));
+  graphics->print(52,10, "Cur Hit Points : "); /* mhp */
+  graphics->print(52,11, "Max Mana       : "); /* mana */
+  graphics->print(52,12, "Cur Mana       : "); /* cmana */
 }
 
 void Game::CreateSub_selectJob()

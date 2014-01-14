@@ -19,6 +19,11 @@ class Game
     int run();
 
   private:
+
+    /* Helpers */
+    std::string to6dStr(int value) const;
+
+    /* Character Creation */
     void createCharacter();
     void CreateSub_selectRace();
     void CreateSub_selectSex();
@@ -26,6 +31,7 @@ class Game
     void CreateSub_printBackground() const;
     void CreateSub_printSocialStats() const;
     void CreateSub_printFightingStats() const;
+    void CreateSub_printMiscStats() const;
     void CreateSub_selectJob();
     void CreateSub_addStartingMoney();
 
