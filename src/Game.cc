@@ -184,14 +184,14 @@ void Game::CreateSub_printFightingStats() const
 void Game::CreateSub_printMiscStats() const
 {
   graphics->print(29, 9, "Level      : " + to6dStr(player->getLevel()));
-  graphics->print(29,10, "Experience : " + player->getXP());
-  graphics->print(29,11, "Max Exp    : " + player->getMaxXP());
+  graphics->print(29,10, "Experience : " + to6dStr(player->getXP()));
+  graphics->print(29,11, "Max Exp    : " + to6dStr(player->getMaxXP()));
   string xp_to_advance = player->getLevel() == Tables::max_player_level ?
                           "******" : to6dStr(player->getXPToLevel());
   graphics->print(29,12, "Exp to Adv.: " + xp_to_advance);
   graphics->print(29,13, "Gold       : " + to6dStr(player->getGold()));
   graphics->print(52, 9, "Max Hit Points : " + to6dStr(player->getMaxHP()));
-  graphics->print(52,10, "Cur Hit Points : "); /* mhp */
+  graphics->print(52,10, "Cur Hit Points : " + to6dStr(player->getHP()));
   graphics->print(52,11, "Max Mana       : "); /* mana */
   graphics->print(52,12, "Cur Mana       : "); /* cmana */
 }
