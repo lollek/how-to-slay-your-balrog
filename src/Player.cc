@@ -295,6 +295,11 @@ int Player::getAC() const
   return ac + getPlusToAC();
 }
 
+int Player::getHP() const 
+{ 
+  return current_hp; 
+}
+
 int Player::getMaxHP() const
 {
   int hd = getHitDie();
@@ -311,7 +316,7 @@ string Player::getBackground() const
 
 void Player::modifyGold(int gold)
 {
-  gold += gold;
+  this->gold += gold;
 }
 
 void Player::modifyStr(int mod) { modifyStat(&max_stat[0], mod); }
